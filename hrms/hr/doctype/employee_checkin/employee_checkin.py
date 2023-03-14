@@ -5,7 +5,7 @@
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import cint, get_datetime, get_link_to_form
+from frappe.utils import cint, get_datetime, get_link_to_form, nowdate
 
 from hrms.hr.doctype.attendance.attendance import (
 	get_duplicate_attendance_record,
@@ -276,3 +276,20 @@ def skip_attendance_in_checkins(log_names):
 		.set("skip_auto_attendance", 1)
 		.where(EmployeeCheckin.name.isin(log_names))
 	).run()
+
+
+def notification_employee_by_log_type(logType):
+	now = nowdate()
+	notifications = []
+
+	employee_doc = frappe.db.get_list('Employee', fields=['employee', 'employee_name', 'user_id'])
+
+	for employee in employee_doc:
+		checkin_doc = frappe.db.exists(
+			"Employee Checkin", {"employee": employee['employee'], "create_at": ['=', now], "log_type": logType}
+		)
+
+		if not checkin_doc:
+			notifications.append(employee['user_id']);
+
+	print(notifications);
