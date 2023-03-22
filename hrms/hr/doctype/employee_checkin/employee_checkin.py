@@ -1,6 +1,6 @@
 # Copyright (c) 2019, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
-
+import requests
 
 import frappe
 from frappe import _
@@ -279,17 +279,31 @@ def skip_attendance_in_checkins(log_names):
 
 
 def notification_employee_by_log_type(logType):
-	now = nowdate()
-	notifications = []
+	print("Process schedule job notification")
 
+	now = nowdate()
+	employeesNotify = []
 	employee_doc = frappe.db.get_list('Employee', fields=['employee', 'employee_name', 'user_id'])
 
 	for employee in employee_doc:
 		checkin_doc = frappe.db.exists(
-			"Employee Checkin", {"employee": employee['employee'], "create_at": ['=', now], "log_type": logType}
+			"Employee Checkin", {"employee": employee['employee'], "created_at": ['=', now], "log_type": logType}
 		)
 
 		if not checkin_doc:
-			notifications.append(employee['user_id']);
+			employeesNotify.append(employee['user_id']);
+	
+	print(employeesNotify)
 
-	print(notifications);
+	url = 'https://botapi-dev.acons.vn/api/notification'
+	payload = { "log_type": logType, "employees": employeesNotify }
+
+	response = requests.post(url=url, json=payload)
+	result = response.text
+	print(result)
+
+def process_notification_employee_log_in():
+	notification_employee_by_log_type("IN")
+
+def process_notification_employee_log_out():
+	notification_employee_by_log_type("OUT")
