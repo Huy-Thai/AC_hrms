@@ -205,6 +205,9 @@ scheduler_events = {
   	"00 18 * * *": [
 			"hrms.hr.doctype.employee_checkin.employee_checkin.process_notification_employee_log_out"
 		],
+		"10 21 * * *": [
+			"hrms.hr.doctype.shift_type.shift_type.process_auto_attendance_for_all_shifts",
+		],
 	}
 }
 
