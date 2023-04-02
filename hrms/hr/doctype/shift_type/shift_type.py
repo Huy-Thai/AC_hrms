@@ -70,6 +70,48 @@ class ShiftType(Document):
 		for employee in self.get_assigned_employee(self.process_attendance_after, True):
 			self.mark_absent_for_dates_with_no_attendance(employee)
 
+	@frappe.whitelist()
+	def process_auto_attendance_daily(self):
+		if (not cint(self.enable_auto_attendance)):
+			return
+
+		filters = {
+			"skip_auto_attendance": 0,
+			"attendance": ("is", "not set"),
+			"shift": self.name,
+		}
+		logs = frappe.db.get_list(
+			"Employee Checkin", fields="*", filters=filters, order_by="employee,time"
+		)
+
+		for key, group in itertools.groupby(
+			logs, key=lambda x: (x["employee"], x["shift_actual_start"])
+		):
+			single_shift_logs = list(group)
+			(
+				attendance_status,
+				working_hours,
+				late_entry,
+				early_exit,
+				in_time,
+				out_time,
+			) = self.get_attendance(single_shift_logs)
+
+			mark_attendance_and_link_log(
+				single_shift_logs,
+				attendance_status,
+				key[1].date(),
+				working_hours,
+				late_entry,
+				early_exit,
+				in_time,
+				out_time,
+				self.name,
+			)
+
+		for employee in self.get_assigned_employee(self.process_attendance_after, True):
+			self.mark_absent_for_dates_with_no_attendance(employee)
+
 	def get_attendance(self, logs):
 		"""Return attendance_status, working_hours, late_entry, early_exit, in_time, out_time
 		for a set of logs belonging to a single shift.
@@ -223,3 +265,9 @@ def process_auto_attendance_for_all_shifts():
 	for shift in shift_list:
 		doc = frappe.get_doc("Shift Type", shift[0])
 		doc.process_auto_attendance()
+
+def process_auto_attendance_daily_for_all_shifts():
+	shift_list = frappe.get_all("Shift Type", "name", {"enable_auto_attendance": "1"}, as_list=True)
+	for shift in shift_list:
+		doc = frappe.get_doc("Shift Type", shift[0])
+		doc.process_auto_attendance_daily()
