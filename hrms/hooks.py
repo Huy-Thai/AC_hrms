@@ -199,7 +199,7 @@ scheduler_events = {
 		"35 17 * * MON-SAT": [
 			"hrms.hr.doctype.employee_checkin.employee_checkin.process_notification_employee_log_out"
 		],
-		"10 21 * * MON-SAT": [
+		"15 23 * * MON-SAT": [
 			"hrms.hr.doctype.shift_type.shift_type.process_auto_attendance_daily_for_all_shifts",
 		],
 	}

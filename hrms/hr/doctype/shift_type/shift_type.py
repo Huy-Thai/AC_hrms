@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 
 import frappe
 from frappe.model.document import Document
-from frappe.utils import cint, get_datetime, get_time, getdate
+from frappe.utils import cint, get_datetime, get_time, getdate, nowdate
 
 from erpnext.buying.doctype.supplier_scorecard.supplier_scorecard import daterange
 from erpnext.setup.doctype.employee.employee import get_holiday_list_for_employee
@@ -74,10 +74,12 @@ class ShiftType(Document):
 	def process_auto_attendance_daily(self):
 		if (not cint(self.enable_auto_attendance)):
 			return
-
+		
+		now = nowdate()
 		filters = {
 			"skip_auto_attendance": 0,
 			"attendance": ("is", "not set"),
+   		"created_at": ['=', now],
 			"shift": self.name,
 		}
 		logs = frappe.db.get_list(
