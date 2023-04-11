@@ -304,14 +304,13 @@ def notification_employee_checkin_checkout():
 			payload[employee["user_id"]] = "IN"
 
 		notifications.append(payload)
-	print(notifications)
 
-#	url = 'https://botapi-dev.acons.vn/api/notification'
-#	payload = { "log_type": logType, "employees": notifications }
+	url = 'https://botapi-dev.acons.vn/api/notification'
+	payload = { "employees": notifications }
 
-#	response = requests.post(url=url, json=payload)
-#	result = response.text
-#	print(result)
+	response = requests.post(url=url, json=payload)
+	result = response.text
+	print(result)
 
 def process_notification_employee_checkin_checkout():
 	notification_employee_checkin_checkout()
