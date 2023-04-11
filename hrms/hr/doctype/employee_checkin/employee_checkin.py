@@ -278,32 +278,37 @@ def skip_attendance_in_checkins(log_names):
 	).run()
 
 
-def notification_employee_by_log_type(logType):
-	print("Process schedule job notification")
-
+def notification_employee_checkin_checkout():
+	logType = ""
 	now = nowdate()
 	employeesNotify = []
-	employee_doc = frappe.db.get_list('Employee', fields=['employee', 'employee_name', 'user_id'])
+
+	employee_doc = frappe.db.get_list("Employee", fields=["employee", "employee_name", "user_id"])
 
 	for employee in employee_doc:
-		checkin_doc = frappe.db.exists(
-			"Employee Checkin", {"employee": employee['employee'], "created_at": ['=', now], "log_type": logType}
+		checkin_docs = frappe.db.get_all(
+			"Employee Checkin",
+			filters={
+				"employee": employee['employee'],
+				"created_at": ['=', now],
+			}
+			order_by='time desc'
 		)
 
-		if not checkin_doc:
-			employeesNotify.append(employee['user_id']);
+		print(checkin_docs)
+
+		#if not checkin_doc:
+		#	employeesNotify.append(employee["user_id"]);
 	
-	print(employeesNotify)
+	#print(employeesNotify)
 
-	url = 'https://botapi-dev.acons.vn/api/notification'
-	payload = { "log_type": logType, "employees": employeesNotify }
+#	url = 'https://botapi-dev.acons.vn/api/notification'
+#	payload = { "log_type": logType, "employees": employeesNotify }
 
-	response = requests.post(url=url, json=payload)
-	result = response.text
-	print(result)
+#	response = requests.post(url=url, json=payload)
+#	result = response.text
+#	print(result)
 
-def process_notification_employee_log_in():
-	notification_employee_by_log_type("IN")
+def process_notification_employee_checkin_checkout():
+	notification_employee_checkin_checkout()
 
-def process_notification_employee_log_out():
-	notification_employee_by_log_type("OUT")

@@ -79,7 +79,7 @@ class ShiftType(Document):
 		filters = {
 			"skip_auto_attendance": 0,
 			"attendance": ("is", "not set"),
-   		"created_at": ['=', now],
+			"created_at": ['=', now],
 			"shift": self.name,
 		}
 		logs = frappe.db.get_list(

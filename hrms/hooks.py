@@ -199,11 +199,11 @@ scheduler_events = {
 	# "weekly": ["hrms.controllers.employee_reminders.send_reminders_in_advance_weekly"],
 	# "monthly": ["hrms.controllers.employee_reminders.send_reminders_in_advance_monthly"],
   "cron": {
-    "05 08 * * MON-SAT": [
-			"hrms.hr.doctype.employee_checkin.employee_checkin.process_notification_employee_log_in"
+		"05 08 * * MON-SAT": [
+			"hrms.hr.doctype.employee_checkin.employee_checkin.process_notification_employee_checkin_checkout"
 		],
 		"35 17 * * MON-SAT": [
-			"hrms.hr.doctype.employee_checkin.employee_checkin.process_notification_employee_log_out"
+			"hrms.hr.doctype.employee_checkin.employee_checkin.process_notification_employee_checkin_checkout"
 		],
 		"15 23 * * MON-SAT": [
 			"hrms.hr.doctype.shift_type.shift_type.process_auto_attendance_daily_for_all_shifts",
