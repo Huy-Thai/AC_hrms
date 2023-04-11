@@ -291,7 +291,7 @@ def notification_employee_checkin_checkout():
 			filters={
 				"employee": employee['employee'],
 				"created_at": ['=', now],
-			}
+			},
 			order_by='time desc'
 		)
 
