@@ -284,8 +284,8 @@ def notification_employee_checkin_checkout():
 
 	employee_doc = frappe.db.get_list("Employee", fields=["employee", "employee_name", "user_id"])
 
-	payload = dict()
 	for employee in employee_doc:
+		payload = dict()
 		checkin_docs = frappe.db.get_all(
 			"Employee Checkin",
 			filters={
@@ -297,12 +297,8 @@ def notification_employee_checkin_checkout():
 		)
 
 		if not checkin_docs:
-			payload[employee["user_id"]] = "IN"
-			notifications.append(payload)
-			continue
-		
-		latest = checkin_docs[0]["log_type"]
-		if latest == "IN":
+			payload[employee["user_id"]] = "IN"	
+		elif checkin_docs[0]["log_type"] == "IN": 
 			payload[employee["user_id"]] = "OUT"
 		else:
 			payload[employee["user_id"]] = "IN"
