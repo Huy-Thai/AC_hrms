@@ -292,15 +292,18 @@ def notification_employee_checkin_checkout():
 				"employee": employee['employee'],
 				"created_at": ['=', now],
 			},
-			order_by='time desc'
+			order_by='time desc',
+			fields=['log_type']
 		)
 
-		print(checkin_docs)
+		if not checkin_docs:
+			payload = dict()
+			payload[employee["user_id"]] = "IN"
 
-		#if not checkin_doc:
-		#	employeesNotify.append(employee["user_id"]);
-	
-	#print(employeesNotify)
+			employeesNotify.append(payload);
+			continue
+
+	print(employeesNotify)
 
 #	url = 'https://botapi-dev.acons.vn/api/notification'
 #	payload = { "log_type": logType, "employees": employeesNotify }
