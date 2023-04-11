@@ -279,12 +279,12 @@ def skip_attendance_in_checkins(log_names):
 
 
 def notification_employee_checkin_checkout():
-	logType = ""
 	now = nowdate()
-	employeesNotify = []
+	notifications = []
 
 	employee_doc = frappe.db.get_list("Employee", fields=["employee", "employee_name", "user_id"])
 
+	payload = dict()
 	for employee in employee_doc:
 		checkin_docs = frappe.db.get_all(
 			"Employee Checkin",
@@ -297,16 +297,21 @@ def notification_employee_checkin_checkout():
 		)
 
 		if not checkin_docs:
-			payload = dict()
+			payload[employee["user_id"]] = "IN"
+			notifications.append(payload)
+			continue
+		
+		latest = checkin_docs[0]["log_type"]
+		if latest == "IN":
+			payload[employee["user_id"]] = "OUT"
+		else:
 			payload[employee["user_id"]] = "IN"
 
-			employeesNotify.append(payload);
-			continue
-
-	print(employeesNotify)
+		notifications.append(payload)
+	print(notifications)
 
 #	url = 'https://botapi-dev.acons.vn/api/notification'
-#	payload = { "log_type": logType, "employees": employeesNotify }
+#	payload = { "log_type": logType, "employees": notifications }
 
 #	response = requests.post(url=url, json=payload)
 #	result = response.text
