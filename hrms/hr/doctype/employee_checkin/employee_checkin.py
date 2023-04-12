@@ -1,7 +1,7 @@
 # Copyright (c) 2019, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 import requests
-
+import json
 import frappe
 from frappe import _
 from frappe.model.document import Document
@@ -298,7 +298,11 @@ def notification_employee_checkin_checkout():
 
 		if not checkin_docs:
 			payload[employee["user_id"]] = "IN"	
-		elif checkin_docs[0]["log_type"] == "IN": 
+	        notifications.append(payload)
+	        continue	
+
+        latest = checkin_docs[0]["log_type"]
+		if latest == "IN": 
 			payload[employee["user_id"]] = "OUT"
 		else:
 			payload[employee["user_id"]] = "IN"
@@ -306,8 +310,8 @@ def notification_employee_checkin_checkout():
 		notifications.append(payload)
 
 	url = 'https://botapi-dev.acons.vn/api/notification'
-	payload = { "employees": notifications }
-    print(notifications)
+	payload = { "body": json.dumps(notifications, indent=4) }
+    print(payload)
 
 	response = requests.post(url=url, json=payload)
 	result = response.text
