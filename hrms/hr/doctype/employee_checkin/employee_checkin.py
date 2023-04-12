@@ -298,10 +298,10 @@ def notification_employee_checkin_checkout():
 
 		if not checkin_docs:
 			payload[employee["user_id"]] = "IN"	
-	        notifications.append(payload)
-	        continue	
+			notifications.append(payload)
+			continue	
 
-        latest = checkin_docs[0]["log_type"]
+		latest = checkin_docs[0]["log_type"]
 		if latest == "IN": 
 			payload[employee["user_id"]] = "OUT"
 		else:
@@ -310,8 +310,8 @@ def notification_employee_checkin_checkout():
 		notifications.append(payload)
 
 	url = 'https://botapi-dev.acons.vn/api/notification'
-	payload = { "body": json.dumps(notifications, indent=4) }
-    print(payload)
+	payload = {"body": json.dumps(notifications, indent=4)}
+	print(payload)
 
 	response = requests.post(url=url, json=payload)
 	result = response.text
