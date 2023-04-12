@@ -307,6 +307,7 @@ def notification_employee_checkin_checkout():
 
 	url = 'https://botapi-dev.acons.vn/api/notification'
 	payload = { "employees": notifications }
+    print(notifications)
 
 	response = requests.post(url=url, json=payload)
 	result = response.text
