@@ -310,7 +310,7 @@ def notification_employee_checkin_checkout():
 		notifications.append(payload)
 
 	url = 'https://botapi-dev.acons.vn/api/notification'
-	payload = {"body": json.dumps(notifications, indent=4)}
+	payload = {"payloads": json.dumps(notifications, indent=4)}
 	print(payload)
 
 	response = requests.post(url=url, json=payload)
