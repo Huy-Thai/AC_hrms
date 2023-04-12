@@ -304,8 +304,8 @@ def notification_employee_checkin_checkout():
 		else:
 			notifications[employee["user_id"]] = "IN"
 
-	url = 'https://botapi-dev.acons.vn/api/notification'
-	payload = {"payloads": json.dumps(notifications, indent=4)}
+	url = "https://botapi-dev.acons.vn/api/notification"
+	payload = { "type": "CHECK-IN", "payloads": [json.dumps(notifications, indent=4)] }
 	print(payload)
 
 	response = requests.post(url=url, json=payload)
