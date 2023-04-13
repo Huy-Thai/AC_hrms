@@ -36,7 +36,7 @@ def execute(filters: Optional[Filters] = None) -> Tuple:
 	if not attendance_map:
 		frappe.msgprint(_("No attendance records found."), alert=True, indicator="orange")
 		return [], [], None, None
-	print(attendance_map)
+
 	columns = get_columns(filters)
 	data = get_data(filters, attendance_map)
 
@@ -202,12 +202,12 @@ def get_attendance_map(filters: Filters) -> Dict:
 	"""Returns a dictionary of employee wise attendance map as per shifts for all the days of the month like
 	{
 	        'employee1': {
-	                'Morning Shift': {1: 'Present', 2: 'Absent', ...}
-	                'Evening Shift': {1: 'Absent', 2: 'Present', ...}
+	                'Morning Shift': {1: 'Present  9,2', 2: 'Absent  10,0', ...}
+	                'Evening Shift': {1: 'Absent  7,7', 2: 'Present  9,7', ...}
 	        },
 	        'employee2': {
-	                'Afternoon Shift': {1: 'Present', 2: 'Absent', ...}
-	                'Night Shift': {1: 'Absent', 2: 'Absent', ...}
+	                'Afternoon Shift': {1: 'Present  8,2', 2: 'Absent  9,0', ...}
+	                'Night Shift': {1: 'Absent 8,9', 2: 'Absent 8,7', ...}
 	        }
 	}
 	"""
@@ -237,7 +237,7 @@ def get_attendance_map(filters: Filters) -> Dict:
 
 	for d in attendance_list:
 		attendance_map.setdefault(d.employee, frappe._dict()).setdefault(d.shift, frappe._dict())
-		attendance_map[d.employee][d.shift][d.day_of_month] = d.status + str(d.working_hours)
+		attendance_map[d.employee][d.shift][d.day_of_month] = d.status + " " + str(d.working_hours)
 
 	return attendance_map
 
