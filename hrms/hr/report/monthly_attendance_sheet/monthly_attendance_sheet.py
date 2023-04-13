@@ -490,7 +490,7 @@ def get_attendance_status_for_detailed_view(
 			row[day] = abbr + " - " + splitData[1]
 
 		attendance_values.append(row)
-
+    print(attendance_values)
 	return attendance_values
 
 
