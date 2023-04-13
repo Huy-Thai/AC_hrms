@@ -485,10 +485,20 @@ def get_attendance_status_for_detailed_view(
 			if status is None and holidays:
 				status = get_holiday_status(day, holidays)
 
-			print(status)
-			splitData = status.split()
-			abbr = status_map.get(splitData[0], "")
-			row[day] = abbr + " - " + splitData[1]
+			data_map = []
+			status_map_value = None
+			working_hours_map_value = None
+
+			if status is not None:
+				data_map = status.split()	
+
+			if data_map:
+				print(data_map)
+				status_map_value = data_map[0]
+				working_hours_map_value = data_map[1]
+
+			abbr = status_map.get(status_map_value, "")
+			row[day] = abbr + " - " + working_hours_map_value
 
 		attendance_values.append(row)
 	print(attendance_values)
