@@ -362,7 +362,7 @@ def get_rows(
 			if not employee_attendance:
 				continue
 
-			attendance_for_employee = get_attendance_status_for_detailed_view(
+			attendance_for_employee = get_attendance_working_hours_for_detailed_view(
 				employee, filters, employee_attendance, holidays
 			)
 			# set employee details in the first row
@@ -465,13 +465,54 @@ def get_attendance_summary_and_days(employee: str, filters: Filters) -> Tuple[Di
 	return summary[0], days
 
 
-def get_attendance_status_for_detailed_view(
+# def get_attendance_status_for_detailed_view(
+# 	employee: str, filters: Filters, employee_attendance: Dict, holidays: List
+# ) -> List[Dict]:
+# 	"""Returns list of shift-wise attendance status for employee
+# 	[
+# 	        {'shift': 'Morning Shift', 1: 'A - 1,0', 2: 'P - 8,9', 3: 'A - 1,5'....},
+# 	        {'shift': 'Evening Shift', 1: 'P - 8,0', 2: 'A - 0,0', 3: 'P - 8,6'....}
+# 	]
+# 	"""
+# 	total_days = get_total_days_in_month(filters)
+# 	attendance_values = []
+
+# 	for shift, status_dict in employee_attendance.items():
+# 		row = {"shift": shift}
+# 		for day in range(1, total_days + 1):
+# 			status = status_dict.get(day)
+# 			if status is None and holidays:
+# 				status = get_holiday_status(day, holidays)
+
+# 			data_map = []
+# 			status_map_value = None
+# 			working_hours_map_value = None
+
+# 			if status is not None:
+# 				data_map = status.split()	
+
+# 			if data_map:
+# 				status_map_value = data_map[0]
+# 				working_hours_map_value = data_map[1]
+
+# 			abbr = status_map.get(status_map_value, "")
+# 			row_value = abbr
+
+# 			if working_hours_map_value is not None:
+# 				row_value = abbr + " - " + working_hours_map_value
+# 			row[day] = row_value
+
+# 		attendance_values.append(row)
+# 	return attendance_values
+
+
+def get_attendance_working_hours_for_detailed_view(
 	employee: str, filters: Filters, employee_attendance: Dict, holidays: List
 ) -> List[Dict]:
-	"""Returns list of shift-wise attendance status for employee
+	"""Returns list of shift-wise attendance working hours for employee
 	[
-	        {'shift': 'Morning Shift', 1: 'A - 1,0', 2: 'P - 8,9', 3: 'A - 1,5'....},
-	        {'shift': 'Evening Shift', 1: 'P - 8,0', 2: 'A - 0,0', 3: 'P - 8,6'....}
+	        {'shift': 'Morning Shift', 1: '1,0', 2: '8,9', 3: '1,5'....},
+	        {'shift': 'Evening Shift', 1: '8,0', 2: '0,0', 3: '8,6'....}
 	]
 	"""
 	total_days = get_total_days_in_month(filters)
@@ -485,21 +526,15 @@ def get_attendance_status_for_detailed_view(
 				status = get_holiday_status(day, holidays)
 
 			data_map = []
-			status_map_value = None
 			working_hours_map_value = None
 
 			if status is not None:
 				data_map = status.split()	
 
 			if data_map:
-				status_map_value = data_map[0]
 				working_hours_map_value = data_map[1]
 
-			abbr = status_map.get(status_map_value, "")
-			row_value = abbr
-
-			if working_hours_map_value is not None:
-				row_value = abbr + " - " + working_hours_map_value
+			row_value = working_hours_map_value
 			row[day] = row_value
 
 		attendance_values.append(row)
