@@ -487,7 +487,7 @@ def get_attendance_status_for_detailed_view(
             
             splitData = status.split()
 			abbr = status_map.get(splitData[0], "")
-			row[day] = abbr + " - " + splitData[1]
+			row[day] = abbr
 
 		attendance_values.append(row)
     print(attendance_values)
