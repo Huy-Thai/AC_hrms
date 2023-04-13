@@ -479,7 +479,6 @@ def get_attendance_status_for_detailed_view(
 
 	for shift, status_dict in employee_attendance.items():
 		row = {"shift": shift}
-		print(status_dict)
 		for day in range(1, total_days + 1):
 			status = status_dict.get(day)
 			if status is None and holidays:
@@ -498,7 +497,12 @@ def get_attendance_status_for_detailed_view(
 				working_hours_map_value = data_map[1]
 
 			abbr = status_map.get(status_map_value, "")
-			row[day] = abbr + " - " + working_hours_map_value
+			row_value = abbr
+
+			if working_hours_map_value is not None:
+				row_value = abbr + " - " + working_hours_map_value
+ 
+			row[day] = row_value
 
 		attendance_values.append(row)
 	print(attendance_values)
