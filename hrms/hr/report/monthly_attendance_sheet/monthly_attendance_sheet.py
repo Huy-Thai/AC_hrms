@@ -470,8 +470,8 @@ def get_attendance_status_for_detailed_view(
 ) -> List[Dict]:
 	"""Returns list of shift-wise attendance status for employee
 	[
-	        {'shift': 'Morning Shift', 1: 'A', 2: 'P', 3: 'A'....},
-	        {'shift': 'Evening Shift', 1: 'P', 2: 'A', 3: 'P'....}
+	        {'shift': 'Morning Shift', 1: 'A - 1,0', 2: 'P - 8,9', 3: 'A - 1,5'....},
+	        {'shift': 'Evening Shift', 1: 'P - 8,0', 2: 'A - 0,0', 3: 'P - 8,6'....}
 	]
 	"""
 	total_days = get_total_days_in_month(filters)
@@ -484,9 +484,10 @@ def get_attendance_status_for_detailed_view(
 			status = status_dict.get(day)
 			if status is None and holidays:
 				status = get_holiday_status(day, holidays)
-
-			abbr = status_map.get(status, "")
-			row[day] = abbr
+            
+            splitData = status.split()
+			abbr = status_map.get(splitData[0], "")
+			row[day] = abbr + " - " + splitData[1]
 
 		attendance_values.append(row)
 
