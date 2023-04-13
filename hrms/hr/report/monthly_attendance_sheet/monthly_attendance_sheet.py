@@ -476,8 +476,8 @@ def get_attendance_status_for_detailed_view(
 	"""
 	total_days = get_total_days_in_month(filters)
 	attendance_values = []
-
-	for shift, status_dict, working_hours in employee_attendance.items():
+	print(employee_attendance.items())
+	for shift, status_dict in employee_attendance.items():
 		row = {"shift": shift}
 
 		for day in range(1, total_days + 1):
@@ -486,7 +486,7 @@ def get_attendance_status_for_detailed_view(
 				status = get_holiday_status(day, holidays)
 
 			abbr = status_map.get(status, "")
-			row[day] = abbr + str(working_hours)
+			row[day] = abbr
 
 		attendance_values.append(row)
 
