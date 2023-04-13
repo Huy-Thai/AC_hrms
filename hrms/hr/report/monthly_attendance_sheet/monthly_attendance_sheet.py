@@ -234,7 +234,7 @@ def get_attendance_map(filters: Filters) -> Dict:
 
 	attendance_list = query.run(as_dict=1)
 	attendance_map = {}
-
+	print(attendance_list)
 	for d in attendance_list:
 		attendance_map.setdefault(d.employee, frappe._dict()).setdefault(d.shift, frappe._dict())
 		attendance_map[d.employee][d.shift][d.day_of_month] = d.status
