@@ -237,7 +237,7 @@ def get_attendance_map(filters: Filters) -> Dict:
 
 	for d in attendance_list:
 		attendance_map.setdefault(d.employee, frappe._dict()).setdefault(d.shift, frappe._dict())
-		attendance_map[d.employee][d.shift][d.day_of_month] = d.status + d.working_hours
+		attendance_map[d.employee][d.shift][d.day_of_month] = d.status + str(d.working_hours)
 
 	return attendance_map
 
