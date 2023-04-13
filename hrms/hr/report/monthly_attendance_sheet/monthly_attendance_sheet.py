@@ -492,7 +492,6 @@ def get_attendance_status_for_detailed_view(
 				data_map = status.split()	
 
 			if data_map:
-				print(data_map)
 				status_map_value = data_map[0]
 				working_hours_map_value = data_map[1]
 
@@ -501,11 +500,9 @@ def get_attendance_status_for_detailed_view(
 
 			if working_hours_map_value is not None:
 				row_value = abbr + " - " + working_hours_map_value
- 
 			row[day] = row_value
 
 		attendance_values.append(row)
-	print(attendance_values)
 	return attendance_values
 
 
