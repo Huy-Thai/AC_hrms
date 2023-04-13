@@ -36,7 +36,7 @@ def execute(filters: Optional[Filters] = None) -> Tuple:
 	if not attendance_map:
 		frappe.msgprint(_("No attendance records found."), alert=True, indicator="orange")
 		return [], [], None, None
-
+	print(attendance_map)
 	columns = get_columns(filters)
 	data = get_data(filters, attendance_map)
 
