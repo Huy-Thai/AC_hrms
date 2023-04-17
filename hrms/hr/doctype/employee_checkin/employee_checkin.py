@@ -311,7 +311,7 @@ def notification_employee_with_logtype(logType):
 		if logType == "IN" and latest == "OUT":
 			notifications[employee["user_id"]] = "IN"
 
-	url = "https://notification-bot.pandion.vn/api/notification"
+	url = "https://acerp-bot-team.pandion.vn/api/notification"
 	payload = {"type": "CHECK-IN", "payloads": [json.dumps(notifications)]}
 	print(payload)
 
