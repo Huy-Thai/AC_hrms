@@ -280,6 +280,7 @@ def skip_attendance_in_checkins(log_names):
 
 def notification_employee_with_logtype(logType):
 	now = nowdate()
+	employeesPass = dict()
 	notifications = dict()
 	employee_doc = frappe.db.get_list("Employee", fields=["employee", "employee_name", "user_id"])
 
@@ -300,16 +301,20 @@ def notification_employee_with_logtype(logType):
 
 		latest = checkin_docs[0]["log_type"]
 		if logType == "IN" and latest == "IN": 
+			employeesPass[logType] = employee["user_id"]
 			continue
 
 		if logType == "OUT" and latest == "IN":
 			notifications[employee["user_id"]] = "OUT"
 
 		if logType == "OUT" and latest == "OUT":
+			employeesPass[logType] = employee["user_id"]
 			continue
 
 		if logType == "IN" and latest == "OUT":
 			notifications[employee["user_id"]] = "IN"
+
+	print(employeesPass)
 
 	# url = "https://acerp-bot-team-dev.pandion.vn/api/notification"
 	payload = {"type": "CHECK-IN", "payloads": [json.dumps(notifications)]}
