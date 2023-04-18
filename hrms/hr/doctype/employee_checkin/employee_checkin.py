@@ -287,7 +287,7 @@ def notification_employee_with_logtype(logType):
 		checkin_docs = frappe.db.get_all(
 			"Employee Checkin",
 			filters={
-				"employee": employee['employee'],
+				"employee": "huy.nguyen@acons.vn",
 				"created_at": ['=', now],
 			},
 			order_by='time desc',
