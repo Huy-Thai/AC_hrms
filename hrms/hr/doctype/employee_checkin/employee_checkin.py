@@ -287,7 +287,7 @@ def notification_employee_with_logtype(logType):
 		checkin_docs = frappe.db.get_all(
 			"Employee Checkin",
 			filters={
-				"employee": "huy.nguyen@acons.vn",
+				"employee": employee['employee'],
 				"created_at": ['=', now],
 			},
 			order_by='time desc',
@@ -311,13 +311,13 @@ def notification_employee_with_logtype(logType):
 		if logType == "IN" and latest == "OUT":
 			notifications[employee["user_id"]] = "IN"
 
-	url = "https://acerp-bot-team-dev.pandion.vn/api/notification"
+	# url = "https://acerp-bot-team-dev.pandion.vn/api/notification"
 	payload = {"type": "CHECK-IN", "payloads": [json.dumps(notifications)]}
 	print(payload)
 
-	response = requests.post(url=url, json=payload)
-	result = response.text
-	print(result)
+	# response = requests.post(url=url, json=payload)
+	# result = response.text
+	# print(result)
 
 def process_notification_employee_with_check_IN():
 	notification_employee_with_logtype("IN")
