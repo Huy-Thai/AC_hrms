@@ -199,18 +199,18 @@ scheduler_events = {
 	# "weekly": ["hrms.controllers.employee_reminders.send_reminders_in_advance_weekly"],
 	# "monthly": ["hrms.controllers.employee_reminders.send_reminders_in_advance_monthly"],
   "cron": {	
-		"05 08 * * MON-SAT": [
-			"hrms.hr.doctype.employee_checkin.employee_checkin.process_notification_employee_with_check_IN"
-		],
-		"0 10 * * MON-SAT": [
-			"hrms.hr.doctype.employee_checkin.employee_checkin.process_notification_employee_with_check_IN"
-		],
-		"35 17 * * MON-SAT": [
-			"hrms.hr.doctype.employee_checkin.employee_checkin.process_notification_employee_with_check_OUT"
-		],
-		"0 18 * * MON-SAT": [
-			"hrms.hr.doctype.employee_checkin.employee_checkin.process_notification_employee_with_check_OUT"
-		],
+		# "05 08 * * MON-SAT": [
+		# 	"hrms.hr.doctype.employee_checkin.employee_checkin.process_notification_employee_with_check_IN"
+		# ],
+		# "0 10 * * MON-SAT": [
+		# 	"hrms.hr.doctype.employee_checkin.employee_checkin.process_notification_employee_with_check_IN"
+		# ],
+		# "35 17 * * MON-SAT": [
+		# 	"hrms.hr.doctype.employee_checkin.employee_checkin.process_notification_employee_with_check_OUT"
+		# ],
+		# "0 18 * * MON-SAT": [
+		# 	"hrms.hr.doctype.employee_checkin.employee_checkin.process_notification_employee_with_check_OUT"
+		# ],
 		"30 23 * * MON-SAT": [
 			"hrms.hr.doctype.shift_type.shift_type.process_auto_attendance_daily_for_all_shifts",
 		],
