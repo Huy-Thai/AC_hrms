@@ -48,9 +48,9 @@ def execute(filters: Optional[Filters] = None) -> Tuple:
 
 	# message = get_message() if not filters.summarized_view else ""
 	message = ""
-	chart = get_chart_data(attendance_map, filters)
+	# chart = get_chart_data(attendance_map, filters)
 
-	return columns, data, message, chart
+	return columns, data, message, None
 
 
 def get_message() -> str:
