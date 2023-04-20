@@ -96,8 +96,11 @@ frappe.query_reports["Monthly Attendance Sheet"] = {
 			// }
 
 			if ((group_by && column.colIndex > 3) || (!group_by && column.colIndex > 2)) {
-				if (value === '0') value = "<div style='background-color:red;' />";
-				else value = "<span style='color:green'>" + value + "</span>";
+				if (value === '0') {
+					return value = "<span></span>";
+				}
+	
+				value = "<span style='color:orange;font-weight:700;'>" + value + "</span>";
 			}
 		}
 
