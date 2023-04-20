@@ -199,7 +199,7 @@ scheduler_events = {
 	# "weekly": ["hrms.controllers.employee_reminders.send_reminders_in_advance_weekly"],
 	# "monthly": ["hrms.controllers.employee_reminders.send_reminders_in_advance_monthly"],
   "cron": {	
-		"0 08 * * MON-SAT": [
+		"0 8 * * MON-SAT": [
 			"hrms.hr.doctype.employee_checkin.employee_checkin.process_notification_employee_with_check_IN"
 		],
 		"30 17 * * MON-SAT": [

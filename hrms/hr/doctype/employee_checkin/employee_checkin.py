@@ -319,7 +319,7 @@ def notification_employee_with_logtype(logType):
 	print(logType)
 	print(employeesPass)
 
-	url = "https://acerp-bot-team-dev.pandion.vn/api/notification"
+	url = "https://acerp-bot-team.pandion.vn/api/notification"
 	payload = {"type": "CHECK-IN", "payloads": [json.dumps(notifications)]}
 	print(payload)
 
