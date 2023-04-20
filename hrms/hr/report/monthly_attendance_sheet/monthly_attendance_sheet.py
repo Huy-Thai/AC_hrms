@@ -46,7 +46,8 @@ def execute(filters: Optional[Filters] = None) -> Tuple:
 		)
 		return columns, [], None, None
 
-	message = get_message() if not filters.summarized_view else ""
+	# message = get_message() if not filters.summarized_view else ""
+	message = ""
 	chart = get_chart_data(attendance_map, filters)
 
 	return columns, data, message, chart
@@ -532,7 +533,7 @@ def get_attendance_working_hours_for_detailed_view(
 				data_map = status.split()	
 
 			if data_map:
-				working_hours_map_value = data_map[1]
+				working_hours_map_value = data_map[1].replace(".0", "")
 
 			row_value = working_hours_map_value
 			row[day] = row_value
