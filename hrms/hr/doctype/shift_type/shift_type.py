@@ -121,6 +121,7 @@ class ShiftType(Document):
 		1. These logs belongs to a single shift, single employee and it's not in a holiday date.
 		2. Logs are in chronological order
 		"""
+		lunch_time = 1.5
 		late_entry = early_exit = False
 		total_working_hours, in_time, out_time = calculate_working_hours(
 			logs, self.determine_check_in_and_check_out, self.working_hours_calculation_based_on
@@ -151,7 +152,8 @@ class ShiftType(Document):
 		):
 			return "Half Day", total_working_hours, late_entry, early_exit, in_time, out_time
 
-		return "Present", total_working_hours, late_entry, early_exit, in_time, out_time
+		final_hours = total_working_hours - lunch_time
+		return "Present", final_hours, late_entry, early_exit, in_time, out_time
 
 	def mark_absent_for_dates_with_no_attendance(self, employee):
 		"""Marks Absents for the given employee on working days in this shift which have no attendance marked.
