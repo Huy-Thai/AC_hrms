@@ -62,11 +62,15 @@ def before_tests():
 
 def config_env_service():
   isProduction = True # Change False if run on env development
-  services = {
-		"msteam_bot": "https://acerp-bot-team-dev.pandion.vn/api/notification"
-	}
+  services = {}
 
   if isProduction:
-    services[0] = "https://acerp-bot-team.pandion.vn/api/notification"
-  
+    services = {
+      "msteam_bot": "https://acerp-bot-team.pandion.vn/api/notification"
+		}
+  else:
+    services = {
+			"msteam_bot": "https://acerp-bot-team-dev.pandion.vn/api/notification"
+		}
+
   return services
