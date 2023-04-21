@@ -99,6 +99,10 @@ frappe.query_reports["Monthly Attendance Sheet"] = {
 				if (value === '0') {
 					return value = "<span></span>";
 				}
+
+				if (value === 'Off') {
+					return value = "<span style='color:red'>" + value + "</span>";
+				}
 	
 				value = "<span style='color:orange;font-weight:500;'>" + value + "</span>";
 			}
