@@ -15,7 +15,7 @@ from hrms.hr.doctype.shift_assignment.shift_assignment import (
 	get_actual_start_end_datetime_of_shift,
 )
 from hrms.hr.utils import validate_active_employee
-
+from hrms.utils import config_env_service
 
 class EmployeeCheckin(Document):
 	def validate(self):
@@ -282,6 +282,8 @@ def notification_employee_with_logtype(logType):
 	now = nowdate()
 	employeesPass = []
 	notifications = {}
+
+	config = config_env_service()
 	employee_doc = frappe.db.get_list("Employee", fields=["employee", "employee_name", "user_id"])
 
 	for employee in employee_doc:
@@ -319,7 +321,7 @@ def notification_employee_with_logtype(logType):
 	print(logType)
 	print(employeesPass)
 
-	url = "https://acerp-bot-team-dev.pandion.vn/api/notification"
+	url = config["msteam_bot"]
 	payload = {"type": "CHECK-IN", "payloads": [json.dumps(notifications)]}
 	print(payload)
 

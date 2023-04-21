@@ -58,3 +58,15 @@ def before_tests():
 
 	enable_all_roles_and_domains()
 	frappe.db.commit()  # nosemgrep
+
+
+def config_env_service():
+  isProduction = False # Change False if run on env development
+  services = {
+		"msteam_bot": "https://acerp-bot-team-dev.pandion.vn/api/notification"
+	}
+
+  if isProduction:
+    services[0] = "https://acerp-bot-team.pandion.vn/api/notification"
+  
+  return services
