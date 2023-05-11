@@ -67,6 +67,8 @@ def config_env_service():
 	}
 
   if isProduction:
-    services[0] = "https://acerp-bot-team.pandion.vn/api/notification"
+    services = {
+		"msteam_bot": "https://acerp-bot-team.pandion.vn/api/notification"
+	}
   
   return services
