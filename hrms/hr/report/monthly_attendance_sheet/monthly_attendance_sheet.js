@@ -96,19 +96,9 @@ frappe.query_reports["Monthly Attendance Sheet"] = {
 					value = "<span style='color:orange'>" + total_hours + "</span>";
 				else if (status === 'L')
 					value = "<span style='color:#318AD8'>" + total_hours + "</span>";
-			}
-
-			// if ((group_by && column.colIndex > 3) || (!group_by && column.colIndex > 2)) {
-			// 	if (value === '0') {
-			// 		return value = "<span></span>";
-			// 	}
-
-			// 	if (value === 'Off') {
-			// 		return value = "<span style='color:black;font-style:italic;'>" + value + "</span>";
-			// 	}
-	
-			// 	value = "<span style='color:orange;font-weight:500;'>" + value + "</span>";
-			// }
+				else if (status === 'WO' || status === 'H')
+					value = "<span style='color:black;font-style:italic;'>" + "Off" + "</span>";
+			}		
 		}
 
 		return value;
