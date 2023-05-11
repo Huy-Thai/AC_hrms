@@ -362,7 +362,7 @@ def get_rows(
 			if not employee_attendance:
 				continue
 
-			attendance_for_employee = get_attendance_working_hours_for_detailed_view(
+			attendance_for_employee = get_attendance_status_for_detailed_view(
 				employee, filters, employee_attendance, holidays
 			)
 			# set employee details in the first row
