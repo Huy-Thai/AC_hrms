@@ -82,30 +82,33 @@ frappe.query_reports["Monthly Attendance Sheet"] = {
 		value = default_formatter(value, row, column, data);
 		const summarized_view = frappe.query_report.get_filter_value('summarized_view');
 		const group_by = frappe.query_report.get_filter_value('group_by');
+		
+		const status = value.split('-')[0];
+		const total_hours = value.split('-')[1];
 
 		if (!summarized_view) {
-			// if ((group_by && column.colIndex > 3) || (!group_by && column.colIndex > 2)) {
-			// 	if (value == 'P' || value == 'WFH')
-			// 		value = "<span style='color:green'>" + value + "</span>";
-			// 	else if (value == 'A')
-			// 		value = "<span style='color:red'>" + value + "</span>";
-			// 	else if (value == 'HD')
-			// 		value = "<span style='color:orange'>" + value + "</span>";
-			// 	else if (value == 'L')
-			// 		value = "<span style='color:#318AD8'>" + value + "</span>";
-			// }
-
 			if ((group_by && column.colIndex > 3) || (!group_by && column.colIndex > 2)) {
-				if (value === '0') {
-					return value = "<span></span>";
-				}
-
-				if (value === 'Off') {
-					return value = "<span style='color:black;font-style:italic;'>" + value + "</span>";
-				}
-	
-				value = "<span style='color:orange;font-weight:500;'>" + value + "</span>";
+				if (status === 'P' || status === 'WFH')
+					value = "<span style='color:green'>" + total_hours + "</span>";
+				else if (status === 'A')
+					value = "<span style='color:red'>" + total_hours + "</span>";
+				else if (status === 'HD')
+					value = "<span style='color:orange'>" + total_hours + "</span>";
+				else if (status === 'L')
+					value = "<span style='color:#318AD8'>" + total_hours + "</span>";
 			}
+
+			// if ((group_by && column.colIndex > 3) || (!group_by && column.colIndex > 2)) {
+			// 	if (value === '0') {
+			// 		return value = "<span></span>";
+			// 	}
+
+			// 	if (value === 'Off') {
+			// 		return value = "<span style='color:black;font-style:italic;'>" + value + "</span>";
+			// 	}
+	
+			// 	value = "<span style='color:orange;font-weight:500;'>" + value + "</span>";
+			// }
 		}
 
 		return value;
