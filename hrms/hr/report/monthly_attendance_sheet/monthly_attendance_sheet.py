@@ -54,7 +54,7 @@ def execute(filters: Optional[Filters] = None) -> Tuple:
 
 def get_message() -> str:
 	message = ""
-	colors = ["green", "red", "orange", "green", "#318AD8", "", ""]
+	colors = ["#60ff47", "red", "orange", "#60ff47", "#318AD8", "", ""]
 
 	count = 0
 	for status, abbr in status_map.items():
