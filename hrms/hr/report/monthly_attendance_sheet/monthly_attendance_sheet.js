@@ -91,13 +91,13 @@ frappe.query_reports["Monthly Attendance Sheet"] = {
 				if (status === 'P' || status === 'WFH')
 					value = "<span style='color:#32a842'>" + total_hours + "</span>";
 				else if (status === 'A')
-					value = "<span style='color:red'>" + total_hours + "</span>";
+					value = "<span style='color:red'>" + "Off" + "</span>";
 				else if (status === 'HD')
 					value = "<span style='color:orange'>" + total_hours + "</span>";
 				else if (status === 'L')
-					value = "<span style='color:#318AD8'>" + total_hours + "</span>";
-				else if (status === 'WO' || status === 'H')
-					value = "<span style='color:black;font-style:italic;'>" + "Off" + "</span>";
+					value = "<span style='color:#318AD8'>" + "Off" + "</span>";
+				// else if (status === 'WO' || status === 'H')
+				// 	value = "<span style='color:black;font-style:italic;'>" + "Off" + "</span>";
 			}		
 		}
 

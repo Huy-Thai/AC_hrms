@@ -125,7 +125,7 @@ class ShiftType(Document):
 		2. Logs are in chronological order
 		"""
 		lunch_time = 1.5
-		auto_time = 3.5
+		auto_checkout_time = 3.5
 		late_entry = early_exit = False
 		total_working_hours, in_time, out_time = calculate_working_hours(
 			logs, self.determine_check_in_and_check_out, self.working_hours_calculation_based_on
@@ -159,7 +159,7 @@ class ShiftType(Document):
 		final_hours = total_working_hours - lunch_time
 
 		if (cint(logs[0].auto_check_out)):
-			final_hours = final_hours - auto_time
+			final_hours = final_hours - auto_checkout_time
 
 		return "Present", final_hours, late_entry, early_exit, in_time, out_time
 

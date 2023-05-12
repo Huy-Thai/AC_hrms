@@ -5,7 +5,7 @@ import json
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import cint, get_datetime, get_link_to_form, nowdate
+from frappe.utils import cint, get_datetime, get_link_to_form, nowdate, now_datetime
 
 from hrms.hr.doctype.attendance.attendance import (
 	get_duplicate_attendance_record,
@@ -318,8 +318,8 @@ def notification_employee_with_logtype(logType):
 			notifications[employee["user_id"]] = "IN"
 			continue
 
-	print(logType)
-	print(employeesPass)
+	# print(logType)
+	# print(employeesPass)
 
 	url = config["msteam_bot"]
 	payload = {"type": "CHECK-IN", "payloads": [json.dumps(notifications)]}
@@ -334,3 +334,44 @@ def process_notification_employee_with_check_IN():
 
 def process_notification_employee_with_check_OUT():
 	notification_employee_with_logtype("OUT")
+
+
+def employee_auto_checkout():
+	now = nowdate()
+	timestamp = now_datetime().__str__()[:-7]
+	config = config_env_service()
+
+	employee_doc = frappe.db.get_list("Employee", fields=["employee", "employee_name"])
+
+	for employee in employee_doc:
+		checkin_docs = frappe.db.get_all(
+			"Employee Checkin",
+			filters={
+				"employee": employee['employee'],
+				"created_at": ['=', now],
+			},
+			order_by='time desc',
+			fields=['log_type']
+		)
+
+		if not checkin_docs:
+			print("Debug one")
+			continue	
+
+		latest = checkin_docs[0]["log_type"]
+		if latest is not "IN" or latest is "OUT":
+			print("Debug two")
+			continue
+
+		doc = frappe.new_doc("Employee Checkin")
+		doc.employee = employee['employee']
+		doc.employee_name = employee['employee_name']
+		doc.time = timestamp
+		doc.device_id = config["server_ip"]
+		doc.log_type = "OUT"
+		doc.auto_check_out = "1"
+		doc.insert()
+	return True
+	
+def process_employee_auto_checkout():
+	employee_auto_checkout()

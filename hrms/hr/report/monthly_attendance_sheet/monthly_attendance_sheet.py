@@ -19,8 +19,8 @@ status_map = {
 	"Half Day": "HD",
 	"Work From Home": "WFH",
 	"On Leave": "L",
-	"Holiday": "H",
-	"Weekly Off": "WO",
+	# "Holiday": "H",
+	# "Weekly Off": "WO",
 }
 
 day_abbr = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
@@ -54,7 +54,8 @@ def execute(filters: Optional[Filters] = None) -> Tuple:
 
 def get_message() -> str:
 	message = ""
-	colors = ["#32a842", "red", "orange", "#32a842", "#318AD8", "", ""]
+	# colors = ["#32a842", "red", "orange", "#32a842", "#318AD8", "", ""]
+	colors = ["#32a842", "red", "orange", "#32a842", "#318AD8"]
 
 	count = 0
 	for status, abbr in status_map.items():
@@ -510,8 +511,6 @@ def get_attendance_status_for_detailed_view(
 
 			if status is None and holidays:
 				status = get_holiday_status(day, holidays)
-				abbr = status_map.get(status, "")
-				row[day] = abbr
 				continue
 
 			data_map = status.split(" - ")

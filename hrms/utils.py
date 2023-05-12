@@ -63,12 +63,14 @@ def before_tests():
 def config_env_service():
   isProduction = False # Change False if run on env development
   services = {
-		"msteam_bot": "https://acerp-bot-team-dev.pandion.vn/api/notification"
+		"msteam_bot": "https://acerp-bot-team-dev.pandion.vn/api/notification",
+		"server_ip": "192.168.11.22"
 	}
 
   if isProduction:
     services = {
-		"msteam_bot": "https://acerp-bot-team.pandion.vn/api/notification"
+		"msteam_bot": "https://acerp-bot-team.pandion.vn/api/notification",
+		"server_ip": "192.168.11.23"
 	}
   
   return services
