@@ -332,7 +332,10 @@ def notification_employee_with_logtype(logType):
 def process_notification_employee_with_check_IN():
 	notification_employee_with_logtype("IN")
 
-def process_notification_employee_with_check_OUT():
+def process_notification_employee_with_check_OUT_from_mon_to_fri():
+	notification_employee_with_logtype("OUT")
+
+def process_notification_employee_with_check_OUT_only_sta():
 	notification_employee_with_logtype("OUT")
 
 
@@ -372,5 +375,8 @@ def employee_auto_checkout():
 		doc.insert()
 	return True
 	
-def process_employee_auto_checkout():
+def process_employee_auto_checkout_from_mon_to_fri():
+	employee_auto_checkout()
+
+def process_employee_auto_checkout_only_sta():
 	employee_auto_checkout()
