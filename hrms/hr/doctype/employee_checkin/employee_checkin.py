@@ -359,7 +359,6 @@ def employee_auto_checkout():
 
 		latest = checkin_docs[0]["log_type"]
 		if latest != "IN" or latest == "OUT":
-			print("Debug two")	
 			continue
 
 		doc = frappe.new_doc("Employee Checkin")

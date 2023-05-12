@@ -81,23 +81,16 @@ frappe.query_reports["Monthly Attendance Sheet"] = {
 	formatter: function(value, row, column, data, default_formatter) {
 		value = default_formatter(value, row, column, data);
 		const summarized_view = frappe.query_report.get_filter_value('summarized_view');
-		const group_by = frappe.query_report.get_filter_value('group_by');
-		
-		const status = value.split('-')[0];
-		const total_hours = value.split('-')[1];
+		const group_by = frappe.query_report.get_filter_value('group_by');	
 
 		if (!summarized_view) {
-			if ((group_by && column.colIndex > 3) || (!group_by && column.colIndex > 2)) {
-				if (status === 'P' || status === 'WFH')
-					value = "<span style='color:#32a842'>" + total_hours + "</span>";
-				else if (status === 'A')
-					value = "<span style='color:red'>" + "Off" + "</span>";
-				else if (status === 'HD')
-					value = "<span style='color:orange'>" + total_hours + "</span>";
-				else if (status === 'L')
-					value = "<span style='color:#318AD8'>" + "Off" + "</span>";
-				// else if (status === 'WO' || status === 'H')
-				// 	value = "<span style='color:black;font-style:italic;'>" + "Off" + "</span>";
+			if ((group_by && column.colIndex > 3) || (!group_by && column.colIndex > 2)) {	
+				if (value === 'Off')
+					value = "<span style='color:red'>" + value + "</span>";
+				else if (value === 'Phép')
+					value = "<span style='color:#318AD8'>" + value + "</span>";	
+				else
+					value = "<span style='color:#32a842'>" + value + "</span>";
 			}		
 		}
 
