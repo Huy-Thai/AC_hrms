@@ -124,6 +124,7 @@ class ShiftType(Document):
 		1. These logs belongs to a single shift, single employee and it's not in a holiday date.
 		2. Logs are in chronological order
 		"""
+		print(logs)
 		lunch_time = 1.5
 		auto_checkout_time = 3.5
 		late_entry = early_exit = False
