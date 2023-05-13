@@ -15,6 +15,7 @@ from erpnext.setup.doctype.holiday_list.holiday_list import is_holiday
 
 from hrms.hr.doctype.attendance.attendance import mark_attendance
 from hrms.hr.doctype.employee_checkin.employee_checkin import (
+	find_index_in_dict,
 	calculate_working_hours,
 	mark_attendance_and_link_log,
 )
@@ -123,8 +124,7 @@ class ShiftType(Document):
 		Assumptions:
 		1. These logs belongs to a single shift, single employee and it's not in a holiday date.
 		2. Logs are in chronological order
-		"""
-		print(logs)
+		"""	
 		lunch_time = 1.5
 		auto_checkout_time = 3.5
 		late_entry = early_exit = False
@@ -158,8 +158,14 @@ class ShiftType(Document):
 			return "Half Day", total_working_hours, late_entry, early_exit, in_time, out_time
 
 		final_hours = total_working_hours - lunch_time
-
-		if (cint(logs[0].auto_check_out)):
+		last_out_log_index = find_index_in_dict(reversed(logs), "log_type", "OUT")
+		last_out_log = (
+			logs[len(logs) - 1 - last_out_log_index]
+			if last_out_log_index or last_out_log_index == 0
+			else None
+		)
+		print(last_out_log)
+		if (cint(last_out_log.auto_check_out)):
 			final_hours = final_hours - auto_checkout_time
 
 		return "Present", final_hours, late_entry, early_exit, in_time, out_time
