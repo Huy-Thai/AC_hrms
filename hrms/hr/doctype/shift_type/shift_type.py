@@ -164,7 +164,7 @@ class ShiftType(Document):
 			if last_out_log_index or last_out_log_index == 0
 			else None
 		)
-		print(last_out_log)
+	
 		if (cint(last_out_log.auto_check_out)):
 			final_hours = final_hours - auto_checkout_time
 
