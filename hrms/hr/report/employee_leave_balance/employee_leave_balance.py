@@ -31,117 +31,212 @@ def execute(filters: Optional[Filters] = None) -> Tuple:
 def get_columns() -> List[Dict]:
 	return [
 		{
-			"label": _("Leave Type"),
+			"label": _("Nhân viên"),
+			"fieldtype": "Dynamic Link",
+			"fieldname": "employee_name",
+			"width": 180,
+			"options": "employee",
+		},
+		{
+			"label": _("Lý do nghỉ"),
 			"fieldtype": "Link",
 			"fieldname": "leave_type",
 			"width": 200,
 			"options": "Leave Type",
 		},
 		{
-			"label": _("Employee"),
-			"fieldtype": "Link",
-			"fieldname": "employee",
+			"label": _("Bắt đầu"),
+			"fieldtype": "Date",
+			"fieldname": "from_date",
+			"width": 130,
+			"options": "From Date",
+		},
+		{
+			"label": _("Kết thúc"),
+			"fieldtype": "Date",
+			"fieldname": "to_date",
+			"width": 130,
+			"options": "To Date",
+		},
+		{
+			"label": _("Người duyệt"),
+			"fieldtype": "Data",
+			"fieldname": "leave_approver_name",
+			"width": 180,
+			"options": "Leave Approver Name",
+		},
+		{
+			"label": _("Thời điểm tạo"),
+			"fieldtype": "Date",
+			"fieldname": "posting_date",
+			"width": 150,
+			"options": "Posting Date",
+		},
+		{
+			"label": _("Tổng ngày nghỉ"),
+			"fieldtype": "Float",
+			"fieldname": "total_leave_days",
 			"width": 100,
-			"options": "Employee",
-		},
-		{
-			"label": _("Employee Name"),
-			"fieldtype": "Dynamic Link",
-			"fieldname": "employee_name",
-			"width": 100,
-			"options": "employee",
-		},
-		{
-			"label": _("Opening Balance"),
-			"fieldtype": "float",
-			"fieldname": "opening_balance",
-			"width": 150,
-		},
-		{
-			"label": _("New Leave(s) Allocated"),
-			"fieldtype": "float",
-			"fieldname": "leaves_allocated",
-			"width": 200,
-		},
-		{
-			"label": _("Leave(s) Taken"),
-			"fieldtype": "float",
-			"fieldname": "leaves_taken",
-			"width": 150,
-		},
-		{
-			"label": _("Leave(s) Expired"),
-			"fieldtype": "float",
-			"fieldname": "leaves_expired",
-			"width": 150,
-		},
-		{
-			"label": _("Closing Balance"),
-			"fieldtype": "float",
-			"fieldname": "closing_balance",
-			"width": 150,
 		},
 	]
 
+# def get_columns() -> List[Dict]:
+# 	return [
+# 		{
+# 			"label": _("Leave Type"),
+# 			"fieldtype": "Link",
+# 			"fieldname": "leave_type",
+# 			"width": 200,
+# 			"options": "Leave Type",
+# 		},
+# 		{
+# 			"label": _("Employee"),
+# 			"fieldtype": "Link",
+# 			"fieldname": "employee",
+# 			"width": 100,
+# 			"options": "Employee",
+# 		},
+# 		{
+# 			"label": _("Employee Name"),
+# 			"fieldtype": "Dynamic Link",
+# 			"fieldname": "employee_name",
+# 			"width": 100,
+# 			"options": "employee",
+# 		},
+# 		{
+# 			"label": _("Opening Balance"),
+# 			"fieldtype": "float",
+# 			"fieldname": "opening_balance",
+# 			"width": 150,
+# 		},
+# 		{
+# 			"label": _("New Leave(s) Allocated"),
+# 			"fieldtype": "float",
+# 			"fieldname": "leaves_allocated",
+# 			"width": 200,
+# 		},
+# 		{
+# 			"label": _("Leave(s) Taken"),
+# 			"fieldtype": "float",
+# 			"fieldname": "leaves_taken",
+# 			"width": 150,
+# 		},
+# 		{
+# 			"label": _("Leave(s) Expired"),
+# 			"fieldtype": "float",
+# 			"fieldname": "leaves_expired",
+# 			"width": 150,
+# 		},
+# 		{
+# 			"label": _("Closing Balance"),
+# 			"fieldtype": "float",
+# 			"fieldname": "closing_balance",
+# 			"width": 150,
+# 		},
+# 	]
+
 
 def get_data(filters: Filters) -> List:
-	leave_types = frappe.db.get_list("Leave Type", pluck="name", order_by="name")
 	conditions = get_conditions(filters)
-
-	user = frappe.session.user
-	department_approver_map = get_department_leave_approver_map(filters.department)
-
-	active_employees = frappe.get_list(
+	employees = frappe.get_list(
 		"Employee",
 		filters=conditions,
-		fields=["name", "employee_name", "department", "user_id", "leave_approver"],
+		fields=["name", "employee_name", "department", "user_id", "leave_approver", "leave_approver_name"],
 	)
 
 	precision = cint(frappe.db.get_single_value("System Settings", "float_precision", cache=True))
-	consolidate_leave_types = len(active_employees) > 1 and filters.consolidate_leave_types
 	row = None
-
 	data = []
 
-	for leave_type in leave_types:
-		if consolidate_leave_types:
-			data.append({"leave_type": leave_type})
-		else:
-			row = frappe._dict({"leave_type": leave_type})
+	for emp in employees:
+		row = frappe._dict({"employee_name": emp.employee_name})	
 
-		for employee in active_employees:
-			leave_approvers = department_approver_map.get(employee.department_name, []).append(
-				employee.leave_approver
-			)
+		leaves = frappe.db.sql(
+			"""
+			SELECT
+				employee, leave_type, from_date, to_date, total_leave_days, description, status, posting_date
+			FROM `tabLeave Ledger Entry`
+			WHERE employee_email=%(employee_email)s
+				AND docstatus=1	
+				AND (from_date between %(from_date)s AND %(to_date)s
+					OR to_date between %(from_date)s AND %(to_date)s
+					OR (from_date < %(from_date)s AND to_date > %(to_date)s))
+		""",
+			{"from_date": filters.from_date, "to_date": filters.to_date, "employee_email": emp.user_id},
+			as_dict=1,
+		)
 
-			if consolidate_leave_types:
-				row = frappe._dict()
-			else:
-				row = frappe._dict({"leave_type": leave_type})
+		print("===========")
+		print(leaves)
+		# for leave_type in leave_types:
+		# row = frappe._dict({"leave_type": leave_type})
 
-			row.employee = employee.name
-			row.employee_name = employee.employee_name
+		# leaves_taken = (get_leaves_for_period(employee.name, leave_type, filters.from_date, filters.to_date) * -1)	
+		# row.leaves_taken = flt(leaves_taken, precision)
 
-			leaves_taken = (
-				get_leaves_for_period(employee.name, leave_type, filters.from_date, filters.to_date) * -1
-			)
-
-			new_allocation, expired_leaves, carry_forwarded_leaves = get_allocated_and_expired_leaves(
-				filters.from_date, filters.to_date, employee.name, leave_type
-			)
-			opening = get_opening_balance(employee.name, leave_type, filters, carry_forwarded_leaves)
-
-			row.leaves_allocated = flt(new_allocation, precision)
-			row.leaves_expired = flt(expired_leaves, precision)
-			row.opening_balance = flt(opening, precision)
-			row.leaves_taken = flt(leaves_taken, precision)
-
-			closing = new_allocation + opening - (row.leaves_expired + leaves_taken)
-			row.closing_balance = flt(closing, precision)
-			row.indent = 1
-			data.append(row)
+		# row.indent = 1
+		data.append(row)
 
 	return data
+
+# def get_data(filters: Filters) -> List:
+# 	leave_types = frappe.db.get_list("Leave Type", pluck="name", order_by="name")
+# 	conditions = get_conditions(filters)
+
+# 	user = frappe.session.user
+# 	department_approver_map = get_department_leave_approver_map(filters.department)
+
+# 	active_employees = frappe.get_list(
+# 		"Employee",
+# 		filters=conditions,
+# 		fields=["name", "employee_name", "department", "user_id", "leave_approver"],
+# 	)
+
+# 	precision = cint(frappe.db.get_single_value("System Settings", "float_precision", cache=True))
+# 	consolidate_leave_types = len(active_employees) > 1 and filters.consolidate_leave_types
+# 	row = None
+
+# 	data = []
+
+# 	for leave_type in leave_types:
+# 		if consolidate_leave_types:
+# 			data.append({"leave_type": leave_type})
+# 		else:
+# 			row = frappe._dict({"leave_type": leave_type})
+
+# 		for employee in active_employees:
+# 			leave_approvers = department_approver_map.get(employee.department_name, []).append(
+# 				employee.leave_approver
+# 			)
+
+# 			if consolidate_leave_types:
+# 				row = frappe._dict()
+# 			else:
+# 				row = frappe._dict({"leave_type": leave_type})
+
+# 			row.employee = employee.name
+# 			row.employee_name = employee.employee_name
+
+# 			leaves_taken = (
+# 				get_leaves_for_period(employee.name, leave_type, filters.from_date, filters.to_date) * -1
+# 			)
+
+# 			new_allocation, expired_leaves, carry_forwarded_leaves = get_allocated_and_expired_leaves(
+# 				filters.from_date, filters.to_date, employee.name, leave_type
+# 			)
+# 			opening = get_opening_balance(employee.name, leave_type, filters, carry_forwarded_leaves)
+
+# 			row.leaves_allocated = flt(new_allocation, precision)
+# 			row.leaves_expired = flt(expired_leaves, precision)
+# 			row.opening_balance = flt(opening, precision)
+# 			row.leaves_taken = flt(leaves_taken, precision)
+
+# 			closing = new_allocation + opening - (row.leaves_expired + leaves_taken)
+# 			row.closing_balance = flt(closing, precision)
+# 			row.indent = 1
+# 			data.append(row)
+
+# 	return data
 
 
 def get_opening_balance(
