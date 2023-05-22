@@ -151,20 +151,15 @@ def get_data(filters: Filters) -> List:
 	for emp in employees:
 		row = frappe._dict({"employee_name": emp.employee_name})	
 
-		leaves = frappe.db.sql(
-			"""
-			SELECT
-				employee, leave_type, from_date, to_date, total_leave_days, description, status, posting_date
-			FROM `tabLeave Ledger Entry`
-			WHERE employee_email=%(employee_email)s
-				AND docstatus=1	
-				AND (from_date between %(from_date)s AND %(to_date)s
-					OR to_date between %(from_date)s AND %(to_date)s
-					OR (from_date < %(from_date)s AND to_date > %(to_date)s))
-		""",
-			{"from_date": filters.from_date, "to_date": filters.to_date, "employee_email": emp.user_id},
-			as_dict=1,
-		)
+		leaves = frappe.get_all(
+			"Leave Application",
+			filters={"employee_email": emp.user_id},
+			or_filters={
+				"from_date": ["between", (from_date, to_date)],
+				"to_date": ["between", (from_date, to_date)],
+			},
+			fields=["from_date ,to_date ,total_leave_days, status, description"],
+		)[0]
 
 		print("===========")
 		print(leaves)
