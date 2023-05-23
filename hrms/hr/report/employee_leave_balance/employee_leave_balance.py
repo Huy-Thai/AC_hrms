@@ -155,10 +155,10 @@ def get_data(filters: Filters) -> List:
 			"Leave Application",
 			filters={"employee_email": emp.user_id},
 			or_filters={
-				"from_date": ["between", (from_date, to_date)],
-				"to_date": ["between", (from_date, to_date)],
+				"from_date": ["between", (filters.from_date, filters.to_date)],
+				"to_date": ["between", (filters.from_date, filters.to_date)],
 			},
-			fields=["from_date ,to_date ,total_leave_days, status, description"],
+			fields=["from_date", "to_date", "total_leave_days", "status", "description"],
 		)[0]
 
 		print("===========")
