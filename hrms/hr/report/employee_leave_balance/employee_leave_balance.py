@@ -155,7 +155,7 @@ def get_data(filters: Filters) -> List:
 			"Leave Application",
 			fields="*",
 			filters={
-				"employee_email": emp.user_id,
+				"employee_email": "nghia.chung@acons.vn",
 				"from_date": ["between", (filters.from_date, filters.to_date)],
 				"to_date": ["between", (filters.from_date, filters.to_date)],
 			},
