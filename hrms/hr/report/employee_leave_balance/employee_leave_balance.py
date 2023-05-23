@@ -149,17 +149,28 @@ def get_data(filters: Filters) -> List:
 	data = []
 
 	for emp in employees:
-		row = frappe._dict({"employee_name": emp.employee_name})	
+		row = frappe._dict({"employee_name": emp.employee_name})
 
-		leaves = frappe.get_all(
+		leaves = frappe.db.get_list(
 			"Leave Application",
-			filters={"employee_email": emp.user_id},
-			or_filters={
+			fields="*",
+			filters={
+				"employee_email": emp.user_id,
 				"from_date": ["between", (filters.from_date, filters.to_date)],
 				"to_date": ["between", (filters.from_date, filters.to_date)],
 			},
-			fields=["from_date", "to_date", "total_leave_days", "status", "description"],
-		)[0]
+			order_by="posting_date desc"
+		)
+
+		# leaves = frappe.get_all(
+		# 	"Leave Application",
+		# 	filters={"employee_email": emp.user_id},
+		# 	# or_filters={
+		# 	# 	"from_date": ["between", (filters.from_date, filters.to_date)],
+		# 	# 	"to_date": ["between", (filters.from_date, filters.to_date)],
+		# 	# },
+		# 	fields=["employee_email", "employee_name", "leave_approver", "leave_approver_name", "status", "description", "from_date", "to_date", "total_leave_days", "posting_date"],
+		# )[0]
 
 		print("===========")
 		print(leaves)
