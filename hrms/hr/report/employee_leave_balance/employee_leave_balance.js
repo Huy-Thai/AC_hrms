@@ -36,7 +36,7 @@ frappe.query_reports["Employee Leave Balance"] = {
 			label: __("Employee"),
 			fieldtype: "Link",
 			options: "Employee",
-		}
+		},
 		// {
 		// 	fieldname: "employee_status",
 		// 	label: __("Employee Status"),
@@ -50,13 +50,13 @@ frappe.query_reports["Employee Leave Balance"] = {
 		// 	],
 		// 	default: "Active",
 		// },
-		// {
-		// 	fieldname: "consolidate_leave_types",
-		// 	label: __("Consolidate Leave Types"),
-		// 	fieldtype: "Check",
-		// 	default: 1,
-		// 	depends_on: "eval: !doc.employee",
-		// }
+		{
+			fieldname: "consolidate_leave_types",
+			label: __("Consolidate Leave Types"),
+			fieldtype: "Check",
+			default: 1,
+			depends_on: "eval: !doc.employee",
+		}
 	],
 
 	onload: () => {

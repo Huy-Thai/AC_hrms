@@ -145,43 +145,43 @@ def get_data(filters: Filters) -> List:
 	)
 
 	precision = cint(frappe.db.get_single_value("System Settings", "float_precision", cache=True))
+	consolidate_leave_types = len(employees) > 1 and filters.consolidate_leave_types
+
 	row = None
 	data = []
 
 	for emp in employees:
-		row = frappe._dict({"employee_name": emp.employee_name})
+		if consolidate_leave_types:
+			data.append({"employee_name": emp.employee_name})
+		else:
+			row = frappe._dict({"employee_name": emp.employee_name})
 
 		leaves = frappe.db.get_list(
 			"Leave Application",
 			fields="*",
 			filters={
-				"employee_email": "nghia.chung@acons.vn",
+				"employee_name": emp.employee_name,
 				"from_date": ["between", (filters.from_date, filters.to_date)],
 				"to_date": ["between", (filters.from_date, filters.to_date)],
 			},
 			order_by="posting_date desc"
 		)
 
-		# leaves = frappe.get_all(
-		# 	"Leave Application",
-		# 	filters={"employee_email": emp.user_id},
-		# 	# or_filters={
-		# 	# 	"from_date": ["between", (filters.from_date, filters.to_date)],
-		# 	# 	"to_date": ["between", (filters.from_date, filters.to_date)],
-		# 	# },
-		# 	fields=["employee_email", "employee_name", "leave_approver", "leave_approver_name", "status", "description", "from_date", "to_date", "total_leave_days", "posting_date"],
-		# )[0]
+		for leave in leaves:
+			if consolidate_leave_types:
+				row = frappe._dict()
+			else:
+				row = frappe._dict({"employee_name": emp.employee_name})
 
-		print("===========")
-		print(leaves)
-		# for leave_type in leave_types:
-		# row = frappe._dict({"leave_type": leave_type})
+			row.leave_type = leave.leave_type
+			row.from_date = leave.from_date
+			row.to_date = leave.to_date
+			row.leave_approver_name = leave.leave_approver_name
+			row.posting_date = leave.posting_date
+			row.total_leave_days = flt(leave.total_leave_days, precision)
 
-		# leaves_taken = (get_leaves_for_period(employee.name, leave_type, filters.from_date, filters.to_date) * -1)	
-		# row.leaves_taken = flt(leaves_taken, precision)
-
-		# row.indent = 1
-		data.append(row)
+			row.indent = 1
+			data.append(row)
 
 	return data
 
