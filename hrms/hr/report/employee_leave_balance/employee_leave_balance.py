@@ -75,7 +75,7 @@ def get_columns() -> List[Dict]:
 		},
 		{
 			"label": _("Tổng ngày nghỉ"),
-			"fieldtype": "Float",
+			"fieldtype": "Data",
 			"fieldname": "total_leave_days",
 			"width": 150,
 		},
@@ -177,7 +177,7 @@ def get_data(filters: Filters) -> List:
 			row.to_date = leave.to_date
 			row.leave_approver_name = leave.leave_approver_name
 			row.posting_date = leave.posting_date
-			row.total_leave_days = leave.total_leave_days
+			row.total_leave_days = str(round(leave.total_leave_days, 1))
 
 			row.indent = 1
 			data.append(row)
