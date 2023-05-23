@@ -24,7 +24,8 @@ def execute(filters: Optional[Filters] = None) -> Tuple:
 
 	columns = get_columns()
 	data = get_data(filters)
-	charts = get_chart_data(data, filters)
+	# charts = get_chart_data(data, filters)
+	charts = None
 	return columns, data, None, charts
 
 
@@ -62,7 +63,7 @@ def get_columns() -> List[Dict]:
 			"label": _("Người duyệt"),
 			"fieldtype": "Data",
 			"fieldname": "leave_approver_name",
-			"width": 180,
+			"width": 190,
 			"options": "Leave Approver Name",
 		},
 		{
@@ -76,7 +77,7 @@ def get_columns() -> List[Dict]:
 			"label": _("Tổng ngày nghỉ"),
 			"fieldtype": "Float",
 			"fieldname": "total_leave_days",
-			"width": 100,
+			"width": 150,
 		},
 	]
 
@@ -141,17 +142,15 @@ def get_data(filters: Filters) -> List:
 	employees = frappe.get_list(
 		"Employee",
 		filters=conditions,
-		fields=["name", "employee_name", "department", "user_id", "leave_approver", "leave_approver_name"],
+		fields=["name", "employee_name", "department", "user_id"],
 	)
 
-	precision = cint(frappe.db.get_single_value("System Settings", "float_precision", cache=True))
-	consolidate_leave_types = len(employees) > 1 and filters.consolidate_leave_types
-
+	consolidate_employee_name = len(employees) > 1 and filters.consolidate_employee_name
 	row = None
 	data = []
 
 	for emp in employees:
-		if consolidate_leave_types:
+		if consolidate_employee_name:
 			data.append({"employee_name": emp.employee_name})
 		else:
 			row = frappe._dict({"employee_name": emp.employee_name})
@@ -168,7 +167,7 @@ def get_data(filters: Filters) -> List:
 		)
 
 		for leave in leaves:
-			if consolidate_leave_types:
+			if consolidate_employee_name:
 				row = frappe._dict()
 			else:
 				row = frappe._dict({"employee_name": emp.employee_name})
@@ -178,7 +177,7 @@ def get_data(filters: Filters) -> List:
 			row.to_date = leave.to_date
 			row.leave_approver_name = leave.leave_approver_name
 			row.posting_date = leave.posting_date
-			row.total_leave_days = flt(leave.total_leave_days, precision)
+			row.total_leave_days = leave.total_leave_days
 
 			row.indent = 1
 			data.append(row)
