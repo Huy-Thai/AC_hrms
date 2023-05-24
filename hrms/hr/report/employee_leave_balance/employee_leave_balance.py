@@ -42,7 +42,7 @@ def get_columns() -> List[Dict]:
 			"label": _("Lý do nghỉ"),
 			"fieldtype": "Link",
 			"fieldname": "leave_type",
-			"width": 200,
+			"width": 180,
 			"options": "Leave Type",
 		},
 		{
@@ -70,20 +70,20 @@ def get_columns() -> List[Dict]:
 			"label": _("Trạng thái"),
 			"fieldtype": "Data",
 			"fieldname": "status",
-			"width": 120,
+			"width": 100,
 			"options": "Status",
 		},	
 		{
 			"label": _("Tổng ngày nghỉ"),
 			"fieldtype": "Data",
 			"fieldname": "total_leave_days",
-			"width": 130,
+			"width": 100,
 		},
 		{
 			"label": _("Thời điểm tạo"),
 			"fieldtype": "Date",
 			"fieldname": "posting_date",
-			"width": 150,
+			"width": 130,
 			"options": "Posting Date",
 		}
 	]
