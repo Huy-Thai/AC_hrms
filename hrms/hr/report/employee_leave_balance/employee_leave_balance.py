@@ -67,18 +67,25 @@ def get_columns() -> List[Dict]:
 			"options": "Leave Approver Name",
 		},
 		{
+			"label": _("Trạng thái"),
+			"fieldtype": "Data",
+			"fieldname": "status",
+			"width": 120,
+			"options": "Status",
+		},	
+		{
+			"label": _("Tổng ngày nghỉ"),
+			"fieldtype": "Data",
+			"fieldname": "total_leave_days",
+			"width": 130,
+		},
+		{
 			"label": _("Thời điểm tạo"),
 			"fieldtype": "Date",
 			"fieldname": "posting_date",
 			"width": 150,
 			"options": "Posting Date",
-		},
-		{
-			"label": _("Tổng ngày nghỉ"),
-			"fieldtype": "Data",
-			"fieldname": "total_leave_days",
-			"width": 150,
-		},
+		}
 	]
 
 # def get_columns() -> List[Dict]:
@@ -176,9 +183,9 @@ def get_data(filters: Filters) -> List:
 			row.from_date = leave.from_date
 			row.to_date = leave.to_date
 			row.leave_approver_name = leave.leave_approver_name
-			row.posting_date = leave.posting_date
+			row.status = leave.status
 			row.total_leave_days = str(round(leave.total_leave_days, 1))
-
+			row.posting_date = leave.posting_date
 			row.indent = 1
 			data.append(row)
 
