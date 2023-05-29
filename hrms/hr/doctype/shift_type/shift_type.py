@@ -157,13 +157,16 @@ class ShiftType(Document):
 		):
 			return "Half Day", total_working_hours, late_entry, early_exit, in_time, out_time
 
-		final_hours = total_working_hours - lunch_time
+		final_hours = total_working_hours
 		last_out_log_index = find_index_in_dict(reversed(logs), "log_type", "OUT")
 		last_out_log = (
 			logs[len(logs) - 1 - last_out_log_index]
 			if last_out_log_index or last_out_log_index == 0
 			else None
 		)
+
+		if datetime.today().weekday() != 5:
+			final_hours -= lunch_time
 	
 		if (cint(last_out_log.auto_check_out)):
 			final_hours = final_hours - auto_checkout_time
