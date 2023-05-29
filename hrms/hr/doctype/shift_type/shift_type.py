@@ -168,9 +168,9 @@ class ShiftType(Document):
 		# 5 == Saturday
 		if datetime.today().weekday() != 5:
 			final_hours -= lunch_time
-	
+
 		if (cint(last_out_log.auto_check_out)):
-			final_hours = final_hours - auto_checkout_time
+			final_hours -= auto_checkout_time
 
 		return "Present", final_hours, late_entry, early_exit, in_time, out_time
 
