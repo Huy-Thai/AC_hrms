@@ -165,6 +165,7 @@ class ShiftType(Document):
 			else None
 		)
 
+		# 5 == Saturday
 		if datetime.today().weekday() != 5:
 			final_hours -= lunch_time
 	
