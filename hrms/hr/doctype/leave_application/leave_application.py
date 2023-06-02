@@ -259,11 +259,13 @@ class LeaveApplication(Document):
 			self.create_or_update_attendance(attendance_name, date)
 
 	def create_or_update_attendance(self, attendance_name, date):
-		status = (
-			"Half Day"
-			if self.half_day_date and getdate(date) == getdate(self.half_day_date)
-			else "On Leave"
-		)
+		# status = (
+		# 	"Half Day"
+		# 	if self.half_day_date and getdate(date) == getdate(self.half_day_date)
+		# 	else "On Leave"
+		# )
+
+		status = "On Leave"
 
 		if attendance_name:
 			# update existing attendance, change absent to on leave
