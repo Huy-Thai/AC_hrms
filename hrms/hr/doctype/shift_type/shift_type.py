@@ -152,8 +152,8 @@ class ShiftType(Document):
 			else None
 		)
 
-		if (last_out_log.auto_check_out is not None & cint(last_out_log.auto_check_out)):
-			total_working_hours -= auto_checkout_time
+		if (hasattr(last_out_log, 'auto_check_out')):
+			total_working_hours -= auto_checkout_time if cint(last_out_log.auto_check_out) else total_working_hours
 
 		if datetime.today().weekday() != SATURDAY:
 			total_working_hours -= lunch_time
