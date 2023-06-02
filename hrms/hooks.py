@@ -214,7 +214,7 @@ scheduler_events = {
 		"30 15 * * SAT": [
 			"hrms.hr.doctype.employee_checkin.employee_checkin.process_employee_auto_checkout_only_sta",
 		],
-		"30 23 * * MON-SAT": [
+		"10 23 * * MON-SAT": [
 			"hrms.hr.doctype.shift_type.shift_type.process_auto_attendance_daily_for_all_shifts",
 		]
 	}

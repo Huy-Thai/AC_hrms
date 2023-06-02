@@ -76,14 +76,13 @@ class ShiftType(Document):
 
 	@frappe.whitelist()
 	def process_auto_attendance_daily(self):
-		if (not cint(self.enable_auto_attendance)):
+		if (not cint(self.enable_auto_attendance) or not self.process_attendance_after):
 			return
-		
-		now = nowdate()
+
 		filters = {
 			"skip_auto_attendance": 0,
 			"attendance": ("is", "not set"),
-			"created_at": ['=', '02-06-2023'],
+			"time": (">=", self.process_attendance_after),
 			"shift": self.name,
 		}
 		logs = frappe.db.get_list(
