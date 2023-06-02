@@ -83,7 +83,7 @@ class ShiftType(Document):
 		filters = {
 			"skip_auto_attendance": 0,
 			"attendance": ("is", "not set"),
-			"created_at": ['=', now],
+			"created_at": ['=', '02-06-2023'],
 			"shift": self.name,
 		}
 		logs = frappe.db.get_list(
@@ -153,7 +153,7 @@ class ShiftType(Document):
 			else None
 		)
 
-		if (cint(last_out_log.auto_check_out)):
+		if (last_out_log.auto_check_out is not None & cint(last_out_log.auto_check_out)):
 			total_working_hours -= auto_checkout_time
 
 		if datetime.today().weekday() != SATURDAY:
