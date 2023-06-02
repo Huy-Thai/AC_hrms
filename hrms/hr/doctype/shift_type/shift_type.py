@@ -124,7 +124,8 @@ class ShiftType(Document):
 		Assumptions:
 		1. These logs belongs to a single shift, single employee and it's not in a holiday date.
 		2. Logs are in chronological order
-		"""	
+		"""
+		SATURDAY = 5
 		lunch_time = 1.5
 		auto_checkout_time = 3.5
 		late_entry = early_exit = False
@@ -145,19 +146,6 @@ class ShiftType(Document):
 		):
 			early_exit = True
 
-		if (
-			self.working_hours_threshold_for_absent
-			and total_working_hours < self.working_hours_threshold_for_absent
-		):
-			return "Absent", total_working_hours, late_entry, early_exit, in_time, out_time
-
-		if (
-			self.working_hours_threshold_for_half_day
-			and total_working_hours < self.working_hours_threshold_for_half_day
-		):
-			return "Half Day", total_working_hours, late_entry, early_exit, in_time, out_time
-
-		final_hours = total_working_hours
 		last_out_log_index = find_index_in_dict(reversed(logs), "log_type", "OUT")
 		last_out_log = (
 			logs[len(logs) - 1 - last_out_log_index]
@@ -165,14 +153,26 @@ class ShiftType(Document):
 			else None
 		)
 
-		# 5 == Saturday
-		if datetime.today().weekday() != 5:
-			final_hours -= lunch_time
-
 		if (cint(last_out_log.auto_check_out)):
-			final_hours -= auto_checkout_time
+			total_working_hours -= auto_checkout_time
 
-		return "Present", final_hours, late_entry, early_exit, in_time, out_time
+		if datetime.today().weekday() != SATURDAY:
+			total_working_hours -= lunch_time
+
+		if (
+			self.working_hours_threshold_for_absent
+			and total_working_hours < self.working_hours_threshold_for_absent
+		):
+			total_hours = total_working_hours if total_working_hours >= 0 else 0
+			return "Absent", total_hours, late_entry, early_exit, in_time, out_time
+
+		if (
+			self.working_hours_threshold_for_half_day
+			and total_working_hours < self.working_hours_threshold_for_half_day
+		):
+			return "Half Day", total_hours, late_entry, early_exit, in_time, out_time
+
+		return "Present", total_working_hours, late_entry, early_exit, in_time, out_time
 
 	def mark_absent_for_dates_with_no_attendance(self, employee):
 		"""Marks Absents for the given employee on working days in this shift which have no attendance marked.
