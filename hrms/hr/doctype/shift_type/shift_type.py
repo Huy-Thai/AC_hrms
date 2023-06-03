@@ -171,7 +171,7 @@ class ShiftType(Document):
 			self.working_hours_threshold_for_half_day
 			and total_working_hours < self.working_hours_threshold_for_half_day
 		):
-			return "Half Day", total_hours, late_entry, early_exit, in_time, out_time
+			return "Half Day", total_working_hours, late_entry, early_exit, in_time, out_time
 
 		return "Present", total_working_hours, late_entry, early_exit, in_time, out_time
 
