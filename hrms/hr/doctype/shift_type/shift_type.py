@@ -3,8 +3,8 @@
 
 
 import itertools
-import datetime as dtime
-from datetime import datetime, timedelta
+import datetime
+from datetime import datetime as dt, timedelta
 
 import frappe
 from frappe.model.document import Document
@@ -200,8 +200,8 @@ class ShiftType(Document):
 		"""Return attendance_status, working_hours, late_entry, early_exit, in_time, out_time
 		for a set of logs belonging to a single shift.
 		"""
-		START_MIDDAY = dtime.time(12, 0, 0)
-		END_MIDDAY = dtime.time(13, 30, 0)
+		START_MIDDAY = datetime.time(12, 0, 0)
+		END_MIDDAY = datetime.time(13, 30, 0)
 		lunch_time = 1.5
 		auto_checkout_time = 6
 		late_entry = early_exit = False
@@ -230,7 +230,7 @@ class ShiftType(Document):
 			else None
 		)
 
-		print(last_out_log.time())
+		print(last_out_log)
 		# if (hasattr(last_out_log, 'time')):
 		# 	isMiddayTime = time_in_range(START_MIDDAY, END_MIDDAY, last_out_log.time())
 		# 	if not isMiddayTime:
@@ -274,7 +274,7 @@ class ShiftType(Document):
 				# skip marking absent on a holiday
 				continue
 
-			timestamp = datetime.combine(date, start_time)
+			timestamp = dt.combine(date, start_time)
 			shift_details = get_employee_shift(employee, timestamp, True)
 
 			if shift_details and shift_details.shift_type.name == self.name:
