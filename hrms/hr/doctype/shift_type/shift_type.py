@@ -3,6 +3,7 @@
 
 
 import itertools
+import datetime as dtime
 from datetime import datetime, timedelta
 
 import frappe
@@ -199,8 +200,8 @@ class ShiftType(Document):
 		"""Return attendance_status, working_hours, late_entry, early_exit, in_time, out_time
 		for a set of logs belonging to a single shift.
 		"""
-		START_MIDDAY = datetime.time(12, 0, 0)
-		END_MIDDAY = datetime.time(13, 30, 0)
+		START_MIDDAY = dtime.time(12, 0, 0)
+		END_MIDDAY = dtime.time(13, 30, 0)
 		lunch_time = 1.5
 		auto_checkout_time = 6
 		late_entry = early_exit = False
