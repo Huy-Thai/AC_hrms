@@ -230,7 +230,7 @@ class ShiftType(Document):
 			else None
 		)
 
-		if (hasattr(last_out_log, 'time')):
+		if last_out_log is not None:
 			print(last_out_log.time())
 			# isMiddayTime = time_in_range(START_MIDDAY, END_MIDDAY, last_out_log.time())
 			# if not isMiddayTime:
