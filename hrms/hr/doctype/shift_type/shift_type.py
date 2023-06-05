@@ -231,10 +231,10 @@ class ShiftType(Document):
 		)
 
 		if last_out_log is not None:
-			print(last_out_log.time())
-			# isMiddayTime = time_in_range(START_MIDDAY, END_MIDDAY, last_out_log.time())
-			# if not isMiddayTime:
-			# 	total_working_hours -= lunch_time
+			print(last_out_log.time)
+			isMiddayTime = time_in_range(START_MIDDAY, END_MIDDAY, last_out_log.time)
+			if not isMiddayTime:
+				total_working_hours -= lunch_time
 
 		if (hasattr(last_out_log, 'auto_check_out')):
 			if cint(last_out_log.auto_check_out):

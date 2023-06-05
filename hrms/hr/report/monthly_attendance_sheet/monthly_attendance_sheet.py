@@ -541,8 +541,6 @@ def get_attendance_status_for_detailed_view(
 			status_map_value = None
 			working_hours_map_value = None
 
-			print(data_map)
-
 			if data_map:
 				status_map_value = data_map[0]
 				working_hours_map_value = data_map[1].replace(".0", "")	
