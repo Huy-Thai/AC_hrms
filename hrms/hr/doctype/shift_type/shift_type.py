@@ -232,7 +232,7 @@ class ShiftType(Document):
 
 		print(last_out_log)
 		if last_out_log is not None:
-			print(last_out_log.strftime("%H:%M"))
+			print(last_out_log.time.strftime("%H:%M"))
 			# last_out_time = datetime.time(last_out_log.hour, last_out_log.minute, 0)
 			# print(last_out_time)
 			# isMiddayTime = time_in_range(START_MIDDAY, END_MIDDAY, last_out_time)
