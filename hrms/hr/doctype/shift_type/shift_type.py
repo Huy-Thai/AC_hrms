@@ -230,6 +230,7 @@ class ShiftType(Document):
 			else None
 		)
 
+		print(last_out_log)
 		if last_out_log is not None:
 			print(last_out_log.strftime("%H:%M"))
 			# last_out_time = datetime.time(last_out_log.hour, last_out_log.minute, 0)
