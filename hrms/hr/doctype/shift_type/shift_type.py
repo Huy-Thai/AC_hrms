@@ -231,8 +231,11 @@ class ShiftType(Document):
 		)
 
 		if last_out_log is not None:
-			print(last_out_log.time)
-			isMiddayTime = time_in_range(START_MIDDAY, END_MIDDAY, last_out_log.time)
+			strp_out_time = dt.strptime(last_out_log.time, "%H:%M")
+			print(strp_out_time)
+			last_out_time = datetime.time(strp_out_time.hour, strp_out_time.minute, 0)
+			print(last_out_time)
+			isMiddayTime = time_in_range(START_MIDDAY, END_MIDDAY, last_out_time)
 			if not isMiddayTime:
 				total_working_hours -= lunch_time
 
