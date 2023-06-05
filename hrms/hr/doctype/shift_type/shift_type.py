@@ -232,8 +232,8 @@ class ShiftType(Document):
 
 		if last_out_log is not None:
 			last_out_time = datetime.time(last_out_log.time.hour, last_out_log.time.minute, 0)
-			print(last_out_time)
 			isMiddayTime = time_in_range(START_MIDDAY, END_MIDDAY, last_out_time)
+			print(isMiddayTime)
 			if not isMiddayTime:
 				total_working_hours -= lunch_time
 
