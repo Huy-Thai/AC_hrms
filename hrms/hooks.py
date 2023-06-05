@@ -202,19 +202,13 @@ scheduler_events = {
 		"0 8 * * MON-SAT": [
 			"hrms.hr.doctype.employee_checkin.employee_checkin.process_notification_employee_with_check_IN"
 		],
-		"30 17 * * MON-FRI": [
-			"hrms.hr.doctype.employee_checkin.employee_checkin.process_notification_employee_with_check_OUT_from_mon_to_fri"
+		"30 17 * * MON-SAT": [
+			"hrms.hr.doctype.employee_checkin.employee_checkin.process_notification_employee_with_check_OUT"
 		],	
-		"0 21 * * MON-FRI": [
-			"hrms.hr.doctype.employee_checkin.employee_checkin.process_employee_auto_checkout_from_mon_to_fri",
+		"30 23 * * MON-SAT": [
+			"hrms.hr.doctype.employee_checkin.employee_checkin.process_employee_auto_checkout",
 		],
-		"0 12 * * SAT": [
-			"hrms.hr.doctype.employee_checkin.employee_checkin.process_notification_employee_with_check_OUT_only_sta"
-		],
-		"30 15 * * SAT": [
-			"hrms.hr.doctype.employee_checkin.employee_checkin.process_employee_auto_checkout_only_sta",
-		],
-		"0 23 * * MON-SAT": [
+		"45 23 * * MON-SAT": [
 			"hrms.hr.doctype.shift_type.shift_type.process_auto_attendance_daily_for_all_shifts",
 		]
 	}

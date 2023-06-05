@@ -15,6 +15,7 @@ from erpnext.setup.doctype.holiday_list.holiday_list import is_holiday
 
 from hrms.hr.doctype.attendance.attendance import mark_attendance
 from hrms.hr.doctype.employee_checkin.employee_checkin import (
+	time_in_range,
 	find_index_in_dict,
 	calculate_working_hours,
 	mark_attendance_and_link_log,
@@ -115,23 +116,63 @@ class ShiftType(Document):
 				self.name,
 			)
 
-		for employee in self.get_assigned_employee(self.process_attendance_after, True):
+		for employee in self.get_assigned_employee(now, True):
 			self.mark_absent_for_dates_with_no_attendance(employee)
+
+
+	# def get_attendance(self, logs):
+	# 	"""Return attendance_status, working_hours, late_entry, early_exit, in_time, out_time
+	# 	for a set of logs belonging to a single shift.
+	# 	Assumptions:
+	# 	1. These logs belongs to a single shift, single employee and it's not in a holiday date.
+	# 	2. Logs are in chronological order
+	# 	"""
+	# 	late_entry = early_exit = False
+	# 	total_working_hours, in_time, out_time = calculate_working_hours(
+	# 		logs, self.determine_check_in_and_check_out, self.working_hours_calculation_based_on
+	# 	)
+	# 	if (
+	# 		cint(self.enable_entry_grace_period)
+	# 		and in_time
+	# 		and in_time > logs[0].shift_start + timedelta(minutes=cint(self.late_entry_grace_period))
+	# 	):
+	# 		late_entry = True
+
+	# 	if (
+	# 		cint(self.enable_exit_grace_period)
+	# 		and out_time
+	# 		and out_time < logs[0].shift_end - timedelta(minutes=cint(self.early_exit_grace_period))
+	# 	):
+	# 		early_exit = True
+
+	# 	if (
+	# 		self.working_hours_threshold_for_absent
+	# 		and total_working_hours < self.working_hours_threshold_for_absent
+	# 	):
+	# 		return "Absent", total_working_hours, late_entry, early_exit, in_time, out_time
+
+	# 	if (
+	# 		self.working_hours_threshold_for_half_day
+	# 		and total_working_hours < self.working_hours_threshold_for_half_day
+	# 	):
+	# 		return "Half Day", total_working_hours, late_entry, early_exit, in_time, out_time
+
+	# 	return "Present", total_working_hours, late_entry, early_exit, in_time, out_time
+
 
 	def get_attendance(self, logs):
 		"""Return attendance_status, working_hours, late_entry, early_exit, in_time, out_time
 		for a set of logs belonging to a single shift.
-		Assumptions:
-		1. These logs belongs to a single shift, single employee and it's not in a holiday date.
-		2. Logs are in chronological order
 		"""
-		SATURDAY = 5
+		START_MIDDAY = datetime.time(12, 0, 0)
+		END_MIDDAY = datetime.time(13, 30, 0)
 		lunch_time = 1.5
-		auto_checkout_time = 3.5
+		auto_checkout_time = 6
 		late_entry = early_exit = False
 		total_working_hours, in_time, out_time = calculate_working_hours(
 			logs, self.determine_check_in_and_check_out, self.working_hours_calculation_based_on
 		)
+
 		if (
 			cint(self.enable_entry_grace_period)
 			and in_time
@@ -153,12 +194,13 @@ class ShiftType(Document):
 			else None
 		)
 
+		isMiddayTime = time_in_range(START_MIDDAY, END_MIDDAY, last_out_log.time)
+		if not isMiddayTime:
+			total_working_hours -= lunch_time
+
 		if (hasattr(last_out_log, 'auto_check_out')):
 			if cint(last_out_log.auto_check_out):
 				total_working_hours -= auto_checkout_time
-
-		if datetime.today().weekday() != SATURDAY:
-			total_working_hours -= lunch_time
 
 		if (
 			self.working_hours_threshold_for_absent
@@ -174,6 +216,7 @@ class ShiftType(Document):
 			return "Half Day", total_working_hours, late_entry, early_exit, in_time, out_time
 
 		return "Present", total_working_hours, late_entry, early_exit, in_time, out_time
+
 
 	def mark_absent_for_dates_with_no_attendance(self, employee):
 		"""Marks Absents for the given employee on working days in this shift which have no attendance marked.

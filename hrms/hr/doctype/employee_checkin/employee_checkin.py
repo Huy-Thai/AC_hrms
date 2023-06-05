@@ -247,6 +247,14 @@ def find_index_in_dict(dict_list, key, value):
 	return next((index for (index, d) in enumerate(dict_list) if d[key] == value), None)
 
 
+def time_in_range(start, end, value):
+	"""Return true if value is in the range [start, end]"""
+	if start <= end:
+		return start <= value <= end
+	else:
+		return start <= value or value <= end
+
+
 def add_comment_in_checkins(log_names, duplicate, overlapping):
 	if duplicate:
 		text = _("Auto Attendance skipped due to duplicate attendance record: {}").format(
@@ -286,11 +294,11 @@ def notification_employee_with_logtype(logType):
 	config = config_env_service()
 	employee_doc = frappe.db.get_list("Employee", fields=["employee", "employee_name", "user_id"])
 
-	for employee in employee_doc:
+	for emp in employee_doc:
 		checkin_docs = frappe.db.get_all(
 			"Employee Checkin",
 			filters={
-				"employee": employee['employee'],
+				"employee": emp.employee,
 				"created_at": ['=', now],
 			},
 			order_by='time desc',
@@ -298,45 +306,37 @@ def notification_employee_with_logtype(logType):
 		)
 
 		if not checkin_docs:
-			notifications[employee["user_id"]] = "IN"
+			notifications[emp.user_id] = "IN"
 			continue	
 
-		latest = checkin_docs[0]["log_type"]
+		latest = checkin_docs[0].log_type
 		if logType == "IN" and latest == "IN": 
-			employeesPass.append(employee["user_id"])
+			employeesPass.append(emp.user_id)
 			continue
 
 		if logType == "OUT" and latest == "IN":
-			notifications[employee["user_id"]] = "OUT"
+			notifications[emp.user_id] = "OUT"
 			continue
 
 		if logType == "OUT" and latest == "OUT":
-			employeesPass.append(employee["user_id"])
+			employeesPass.append(emp.user_id)
 			continue
 
 		if logType == "IN" and latest == "OUT":
-			notifications[employee["user_id"]] = "IN"
+			notifications[emp.user_id] = "IN"
 			continue
 
 	# print(logType)
 	# print(employeesPass)
 
-	url = config["msteam_bot"]
+	url = config.msteam_bot
 	payload = {"type": "CHECK-IN", "payloads": [json.dumps(notifications)]}
-	print(payload)
+	# print(payload)
 
 	response = requests.post(url=url, json=payload)
 	result = response.text
 	print(result)
-
-def process_notification_employee_with_check_IN():
-	notification_employee_with_logtype("IN")
-
-def process_notification_employee_with_check_OUT_from_mon_to_fri():
-	notification_employee_with_logtype("OUT")
-
-def process_notification_employee_with_check_OUT_only_sta():
-	notification_employee_with_logtype("OUT")
+	# Handler push message error here
 
 
 def employee_auto_checkout():
@@ -346,11 +346,11 @@ def employee_auto_checkout():
 
 	employee_doc = frappe.db.get_list("Employee", fields=["employee", "employee_name"])
 
-	for employee in employee_doc:
+	for emp in employee_doc:
 		checkin_docs = frappe.db.get_all(
 			"Employee Checkin",
 			filters={
-				"employee": employee['employee'],
+				"employee": emp.employee,
 				"created_at": ['=', now],
 			},
 			order_by='time desc',
@@ -360,23 +360,29 @@ def employee_auto_checkout():
 		if not checkin_docs:
 			continue	
 
-		latest = checkin_docs[0]["log_type"]
-		if latest != "IN" or latest == "OUT":
+		latest = checkin_docs[0].log_type
+		if latest == "OUT":
 			continue
 
 		doc = frappe.new_doc("Employee Checkin")
-		doc.employee = employee['employee']
-		doc.employee_name = employee['employee_name']
+		doc.employee = emp.employee
+		doc.employee_name = emp.employee_name
 		doc.time = timestamp
 		doc.created_at = now
-		doc.device_id = config["server_ip"]
+		doc.device_id = config.server_ip
 		doc.log_type = "OUT"
 		doc.auto_check_out = "1"
 		doc.insert()
 	return True
-	
-def process_employee_auto_checkout_from_mon_to_fri():
-	employee_auto_checkout()
 
-def process_employee_auto_checkout_only_sta():
+
+def process_notification_employee_with_check_IN():
+	notification_employee_with_logtype("IN")
+
+
+def process_notification_employee_with_check_OUT():
+	notification_employee_with_logtype("OUT")
+
+
+def process_employee_auto_checkout():
 	employee_auto_checkout()
