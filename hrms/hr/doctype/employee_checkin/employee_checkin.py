@@ -329,7 +329,7 @@ def notification_employee_with_logtype(logType):
 	# print(logType)
 	# print(employeesPass)
 
-	url = config.msteam_bot
+	url = config["msteam_bot"]
 	payload = {"type": "CHECK-IN", "payloads": [json.dumps(notifications)]}
 	# print(payload)
 
@@ -369,7 +369,7 @@ def employee_auto_checkout():
 		doc.employee_name = emp.employee_name
 		doc.time = timestamp
 		doc.created_at = now
-		doc.device_id = config.server_ip
+		doc.device_id = config["server_ip"]
 		doc.log_type = "OUT"
 		doc.auto_check_out = "1"
 		doc.insert()
