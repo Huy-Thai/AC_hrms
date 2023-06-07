@@ -236,9 +236,9 @@ class ShiftType(Document):
 			if not isMiddayTime:
 				total_working_hours -= lunch_time
 
-		if (hasattr(last_out_log, 'auto_check_out')):
-			if cint(last_out_log.auto_check_out):
-				total_working_hours -= auto_checkout_time
+			if (hasattr(last_out_log, 'auto_check_out')):
+				if cint(last_out_log.auto_check_out):
+					total_working_hours -= auto_checkout_time
 
 		if (
 			self.working_hours_threshold_for_absent
