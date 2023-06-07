@@ -369,7 +369,7 @@ def employee_auto_checkout():
 		doc.employee_name = emp.employee_name
 		doc.time = timestamp
 		doc.created_at = now
-		doc.device_id = config.server_ip
+		doc.device_id = config["server_ip"]
 		doc.log_type = "OUT"
 		doc.auto_check_out = "1"
 		doc.insert()
