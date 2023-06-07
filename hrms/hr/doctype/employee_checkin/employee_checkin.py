@@ -329,7 +329,7 @@ def notification_employee_with_logtype(logType):
 	# print(logType)
 	# print(employeesPass)
 
-	url = config.msteam_bot
+	url = config["msteam_bot"]
 	payload = {"type": "CHECK-IN", "payloads": [json.dumps(notifications)]}
 	# print(payload)
 
