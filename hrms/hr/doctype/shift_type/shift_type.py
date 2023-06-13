@@ -91,7 +91,7 @@ class ShiftType(Document):
 			filters={
 			"skip_auto_attendance": 0,
 			"attendance": ("is", "not set"),
-			"created_at": (">=", now),
+			"created_at": ("=", now),
 			"shift": self.name,
 			},
 			order_by="employee,time",
@@ -208,6 +208,8 @@ class ShiftType(Document):
 		total_working_hours, in_time, out_time = calculate_working_hours(
 			logs, self.determine_check_in_and_check_out, self.working_hours_calculation_based_on
 		)
+
+		print(logs)
 
 		if (
 			cint(self.enable_entry_grace_period)
