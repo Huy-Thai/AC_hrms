@@ -209,8 +209,6 @@ class ShiftType(Document):
 			logs, self.determine_check_in_and_check_out, self.working_hours_calculation_based_on
 		)
 
-		print(logs)
-
 		if (
 			cint(self.enable_entry_grace_period)
 			and in_time
@@ -237,7 +235,7 @@ class ShiftType(Document):
 			isMiddayTimeRange = time_in_range(START_MIDDAY, END_MIDDAY, last_out_time)
 			isAfterEarlyAfternoon = last_out_time > END_MIDDAY
 
-			if not isMiddayTimeRange or isAfterEarlyAfternoon:
+			if not isMiddayTimeRange and isAfterEarlyAfternoon:
 				total_working_hours -= lunch_time
 
 			if (hasattr(last_out_log, 'auto_check_out')):
