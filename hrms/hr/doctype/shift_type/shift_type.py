@@ -232,10 +232,10 @@ class ShiftType(Document):
 
 		if last_out_log is not None:
 			last_out_time = datetime.time(last_out_log.time.hour, last_out_log.time.minute, 0)
-			isMiddayTime = time_in_range(START_MIDDAY, END_MIDDAY, last_out_time)
-			isBeforeEarlyAfternoon = last_out_time > END_MIDDAY
+			isMiddayTimeRange = time_in_range(START_MIDDAY, END_MIDDAY, last_out_time)
+			isAfterEarlyAfternoon = last_out_time > END_MIDDAY
 
-			if not isMiddayTime and isBeforeEarlyAfternoon:
+			if not isMiddayTimeRange or isAfterEarlyAfternoon:
 				total_working_hours -= lunch_time
 
 			if (hasattr(last_out_log, 'auto_check_out')):
