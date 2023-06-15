@@ -139,7 +139,7 @@ def mark_attendance_and_link_log(
 		company = frappe.db.get_value("Employee", employee, "company", cache=True)
 		duplicate = get_duplicate_attendance_record(employee, attendance_date, shift)
 		overlapping = get_overlapping_shift_attendance(employee, attendance_date, shift)
-
+		print(duplicate)
 		if not duplicate and not overlapping:
 			doc_dict = {
 				"doctype": "Attendance",

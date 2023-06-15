@@ -270,8 +270,14 @@ class LeaveApplication(Document):
 		if attendance_name:
 			# update existing attendance, change absent to on leave
 			doc = frappe.get_doc("Attendance", attendance_name)
-			if doc.status != status:
+			if doc.status == "Absent":
 				doc.db_set({"status": status, "leave_type": self.leave_type, "leave_application": self.name})
+			elif doc.status == "Half Day":
+				doc.db_set({"leave_type": self.leave_type, "leave_application": self.name})
+			else:
+				# TODO:
+				print(".......")
+
 		else:
 			# make new attendance and submit it
 			doc = frappe.new_doc("Attendance")
