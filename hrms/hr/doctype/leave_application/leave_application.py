@@ -272,11 +272,13 @@ class LeaveApplication(Document):
 			doc = frappe.get_doc("Attendance", attendance_name)
 			if doc.status == "Absent":
 				doc.db_set({"status": status, "leave_type": self.leave_type, "leave_application": self.name})
-			elif doc.status == "Half Day":
+
+			if doc.status == "Half Day" and cint(self.half_day):
 				doc.db_set({"leave_type": self.leave_type, "leave_application": self.name})
 			else:
-				# TODO:
-				print(".......")
+				frappe.msgprint("Cảnh báo: Thời gian nghỉ hợp lệ vào ngày này phải là nửa ngày (Half Day)")
+
+			# TODO: handle with status work from home
 
 		else:
 			# make new attendance and submit it
