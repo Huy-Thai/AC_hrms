@@ -141,7 +141,7 @@ def mark_attendance_and_link_log(
 		duplicate = get_duplicate_attendance_record(employee, attendance_date, shift)
 		overlapping = get_overlapping_shift_attendance(employee, attendance_date, shift)
 
-		leave  = frappe.get_all(
+		leave = frappe.get_all(
 			"Leave Application",
 			fields=[
 				"name",
@@ -166,9 +166,12 @@ def mark_attendance_and_link_log(
 				"early_exit": early_exit,
 				"in_time": in_time,
 				"out_time": out_time,
-				"leave_type": leave[0].leave_type,
-				"leave_application": leave[0].name,
 			}
+
+			if leave:
+				doc_dict["leave_type"] = leave[0].leave_type
+				doc_dict["leave_application"] = leave[0].name
+
 			attendance = frappe.get_doc(doc_dict).insert()
 			attendance.submit()
 
@@ -320,7 +323,7 @@ def notification_employee_with_logtype(logType):
 	notifications = {}
 
 	config = config_env_service()
-	employee_doc = frappe.db.get_list("Employee", fields=["employee", "employee_name", "user_id"])
+	employee_doc = frappe.db.get_all("Employee", fields=["employee", "employee_name", "user_id"])
 
 	for emp in employee_doc:
 		checkin_docs = frappe.db.get_all(
@@ -372,7 +375,7 @@ def employee_auto_checkout():
 	timestamp = now_datetime().__str__()[:-7]
 	config = config_env_service()
 
-	employee_doc = frappe.db.get_list("Employee", fields=["employee", "employee_name"])
+	employee_doc = frappe.db.get_all("Employee", fields=["employee", "employee_name"])
 
 	for emp in employee_doc:
 		checkin_docs = frappe.db.get_all(
