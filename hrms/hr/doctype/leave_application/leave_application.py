@@ -276,7 +276,7 @@ class LeaveApplication(Document):
 			if doc.status == "Half Day" and cint(self.half_day):
 				doc.db_set({"leave_type": self.leave_type, "leave_application": self.name})
 			else:
-				frappe.msgprint("Cảnh báo: Thời gian nghỉ hợp lệ vào ngày này phải là nửa ngày (Half Day)")
+				frappe.throw(_("Cảnh báo: Thời gian nghỉ hợp lệ vào ngày này phải là nửa ngày (Half Day)"))
 
 			# TODO: handle with status work from home
 
