@@ -141,10 +141,17 @@ def mark_attendance_and_link_log(
 		duplicate = get_duplicate_attendance_record(employee, attendance_date, shift)
 		overlapping = get_overlapping_shift_attendance(employee, attendance_date, shift)
 
-		name, leave_type  = frappe.db.get_value('Leave Application', {
-			"employee": employee,
-			"posting_date": ("=", now),
-		})
+		leave  = frappe.get_all(
+			"Leave Application",
+			fields=[
+				"name",
+				"leave_type",
+			],
+			filters={
+				"employee": employee,
+				"posting_date": ("=", now),
+			},
+		)
 
 		if not duplicate and not overlapping:
 			doc_dict = {
@@ -159,8 +166,8 @@ def mark_attendance_and_link_log(
 				"early_exit": early_exit,
 				"in_time": in_time,
 				"out_time": out_time,
-				"leave_type": leave_type,
-				"leave_application": name,
+				"leave_type": leave[0].leave_type,
+				"leave_application": leave[0].name,
 			}
 			attendance = frappe.get_doc(doc_dict).insert()
 			attendance.submit()
