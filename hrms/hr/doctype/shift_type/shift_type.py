@@ -89,10 +89,10 @@ class ShiftType(Document):
 				"auto_check_out",
 			],
 			filters={
-			"skip_auto_attendance": 0,
-			"attendance": ("is", "not set"),
-			"created_at": ("=", now),
-			"shift": self.name,
+				"skip_auto_attendance": 0,
+				"attendance": ("is", "not set"),
+				"created_at": ("=", now),
+				"shift": self.name,
 			},
 			order_by="employee,time",
 		)

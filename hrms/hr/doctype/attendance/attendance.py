@@ -302,7 +302,7 @@ def mark_attendance(
 			"status": status,
 			"company": company,
 			"shift": shift,
-			# "leave_type": leave_type,
+			"leave_type": leave_type,
 			"late_entry": late_entry,
 			"early_exit": early_exit,
 		}

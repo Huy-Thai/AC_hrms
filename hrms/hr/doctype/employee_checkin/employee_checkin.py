@@ -128,6 +128,7 @@ def mark_attendance_and_link_log(
 	:param attendance_date: Date of the attendance to be created.
 	:param working_hours: (optional)Number of working hours for the given date.
 	"""
+	now = nowdate()
 	log_names = [x.name for x in logs]
 	employee = logs[0].employee
 
@@ -139,6 +140,12 @@ def mark_attendance_and_link_log(
 		company = frappe.db.get_value("Employee", employee, "company", cache=True)
 		duplicate = get_duplicate_attendance_record(employee, attendance_date, shift)
 		overlapping = get_overlapping_shift_attendance(employee, attendance_date, shift)
+
+		filters={
+			"employee": employee,
+			"posting_date": ("=", now),
+		},
+		name, leave_type  = frappe.db.get_value('Task', filters, ['name', 'leave_type'])
 
 		if not duplicate and not overlapping:
 			doc_dict = {
@@ -153,6 +160,8 @@ def mark_attendance_and_link_log(
 				"early_exit": early_exit,
 				"in_time": in_time,
 				"out_time": out_time,
+				"leave_type": leave_type,
+				"leave_application": name,
 			}
 			attendance = frappe.get_doc(doc_dict).insert()
 			attendance.submit()
