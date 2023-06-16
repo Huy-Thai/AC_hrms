@@ -171,7 +171,17 @@ def mark_attendance_and_link_log(
 			return attendance
 		else:
 			doc = frappe.get_doc("Attendance", duplicate[0].name)
-			print(doc)
+			if doc.leave_application:
+				doc.db_set({
+					"status": "Half Day",
+					"working_hours": working_hours,
+					"shift": shift,
+					"late_entry": late_entry,
+					"early_exit": early_exit,
+					"in_time": in_time,
+					"out_time": out_time,
+				})
+				return None
 
 			skip_attendance_in_checkins(log_names)
 			add_comment_in_checkins(log_names, duplicate, overlapping)
