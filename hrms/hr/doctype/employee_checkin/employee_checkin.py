@@ -375,10 +375,10 @@ def summarize_attendances_leaves_to_bo():
   now = nowdate()
   config = config_env_service()
 
-  empLeaves = {}
-  empCheckIns = {}
-  empNotCheckIns = {}
-  empLateEntry = {}
+  empLeaves = []
+  empCheckIns = []
+  empNotCheckIns = []
+  empLateEntry = []
   notifications = {}
   employee_docs = frappe.db.get_all("Employee", fields=["employee", "employee_name", "user_id"])
   
@@ -411,22 +411,34 @@ def summarize_attendances_leaves_to_bo():
 
     if not checkin_docs:
       if leaves:
-        empLeaves[emp.user_id] = emp.employee_name
+        empLeaves.append({
+					"email": emp.user_id,
+					"name": emp.employee_name,
+				})
         continue
-      empNotCheckIns[emp.user_id] = emp.employee_name
+      empNotCheckIns.append({
+				"email": emp.user_id,
+				"name": emp.employee_name,
+			})
       continue
 
     first_in_log_index = find_index_in_dict(checkin_docs, "log_type", "IN")
     first_in_log = (checkin_docs[first_in_log_index] if first_in_log_index or first_in_log_index == 0 else None)
     if first_in_log:
       if (first_in_log.time > checkin_docs[0].shift_start + timedelta(minutes=15)):
-        empLateEntry[emp.user_id] = emp.employee_name
-      empCheckIns[emp.user_id] = emp.employee_name
+        empLateEntry.append({
+					"email": emp.user_id,
+					"name": emp.employee_name,
+				})
+      empCheckIns.append({
+				"email": emp.user_id,
+				"name": emp.employee_name,
+			})
 
-  notifications["Leaves"] = empLeaves
-  notifications["NotCheckIns"] = empNotCheckIns
-  notifications["LateEntries"] = empLateEntry
-  notifications["CheckIns"] = empCheckIns
+  notifications["leaves"] = empLeaves
+  notifications["notCheckIns"] = empNotCheckIns
+  notifications["lateEntries"] = empLateEntry
+  notifications["checkIns"] = empCheckIns
 
   print(notifications)
   url = config["msteam_bot"]
