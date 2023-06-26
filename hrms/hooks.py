@@ -202,6 +202,9 @@ scheduler_events = {
 		"0 8 * * MON-SAT": [
 			"hrms.hr.doctype.employee_checkin.employee_checkin.process_notification_employee_with_check_IN"
 		],
+		"0 11 * * MON-SAT": [
+			"hrms.hr.doctype.employee_checkin.employee_checkin.process_summarize_notification_to_bo_at_eleven_hours"
+		],
 		"30 17 * * MON-SAT": [
 			"hrms.hr.doctype.employee_checkin.employee_checkin.process_notification_employee_with_check_OUT"
 		],	

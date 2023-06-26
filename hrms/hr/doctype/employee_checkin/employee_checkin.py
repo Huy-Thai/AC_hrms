@@ -6,6 +6,7 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 from frappe.utils import cint, get_datetime, get_link_to_form, nowdate, now_datetime
+from datetime import timedelta
 
 from hrms.hr.doctype.attendance.attendance import (
 	get_duplicate_attendance_record,
@@ -370,6 +371,73 @@ def notification_employee_with_logtype(logType):
 	# Handler push message error here
 
 
+def summarize_notification_to_bo_at_eleven_hours():
+  now = nowdate()
+  config = config_env_service()
+
+  empLeaves = []
+  empCheckIns = []
+  empNotCheckIns = []
+  empLateEntry = []
+  notifications = {}
+  employee_docs = frappe.db.get_all("Employee", fields=["employee", "employee_name", "user_id"])
+  
+  for emp in employee_docs:
+    checkin_docs = frappe.db.get_all(
+			"Employee Checkin",
+			filters={
+				"employee": emp.employee,
+				"created_at": ['=', now],
+			},
+			order_by='time desc',
+			fields=[
+       	"time",
+     		"log_type",
+				"shift_start",
+       ]
+		)
+
+    leaves = frappe.get_all(
+			"Leave Application",
+			fields=[
+				"name",
+				"leave_type",
+			],
+			filters={
+				"employee": emp.employee,
+				"posting_date": ("=", now),
+			},
+		)
+
+    if not checkin_docs:
+      if leaves:
+        empLeaves.append(emp.employee_name)
+        continue
+      empNotCheckIns.append(emp.employee_name)
+      continue
+
+    first_in_log_index = find_index_in_dict(checkin_docs, "log_type", "IN")
+    first_in_log = (checkin_docs[first_in_log_index] if first_in_log_index or first_in_log_index == 0 else None)
+    if first_in_log:
+      if (first_in_log.time > checkin_docs[0].shift_start + timedelta(minutes=15)):
+        empLateEntry.append(emp.employee_name)
+      empCheckIns.append(emp.employee_name)
+
+  notifications["Leaves"] = empLeaves
+  notifications["NotCheckIns"] = empNotCheckIns
+  notifications["LateEntries"] = empLateEntry
+  notifications["CheckIns"] = empCheckIns
+
+  print(notifications)
+  url = config["msteam_bot"]
+  payload = {"type": "SUMMARIZE_AT_ELEVEN_HOURS", "payloads": [json.dumps(notifications)]}
+
+  response = requests.post(url=url, json=payload)
+  result = response.text
+  print(result)
+	# Handler push message error here
+
+
 def employee_auto_checkout():
 	now = nowdate()
 	timestamp = now_datetime().__str__()[:-7]
@@ -417,3 +485,7 @@ def process_notification_employee_with_check_OUT():
 
 def process_employee_auto_checkout():
 	employee_auto_checkout()
+
+
+def process_summarize_notification_to_bo_at_eleven_hours():
+	summarize_notification_to_bo_at_eleven_hours()
