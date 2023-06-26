@@ -411,17 +411,21 @@ def summarize_attendances_leaves_to_bo():
 
     if not checkin_docs:
       if leaves:
-        empLeaves[emp.user_id] = emp.employee_name
+        empLeaves["email"] = emp.user_id
+        empLeaves["name"] = emp.employee_name
         continue
-      empNotCheckIns[emp.user_id] = emp.employee_name
+      empNotCheckIns["email"] = emp.user_id
+      empNotCheckIns["name"] = emp.employee_name
       continue
 
     first_in_log_index = find_index_in_dict(checkin_docs, "log_type", "IN")
     first_in_log = (checkin_docs[first_in_log_index] if first_in_log_index or first_in_log_index == 0 else None)
     if first_in_log:
       if (first_in_log.time > checkin_docs[0].shift_start + timedelta(minutes=15)):
-        empLateEntry[emp.user_id] = emp.employee_name
-      empCheckIns[emp.user_id] = emp.employee_name
+        empLateEntry["email"] = emp.user_id
+        empLateEntry["name"] = emp.employee_name
+      empCheckIns["email"] = emp.user_id
+      empCheckIns["name"] = emp.employee_name
 
   notifications["Leaves"] = empLeaves
   notifications["NotCheckIns"] = empNotCheckIns
