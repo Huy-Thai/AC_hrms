@@ -371,14 +371,14 @@ def notification_employee_with_logtype(logType):
 	# Handler push message error here
 
 
-def summarize_notification_to_bo_at_eleven_hours():
+def summarize_attendances_leaves_to_bo():
   now = nowdate()
   config = config_env_service()
 
-  empLeaves = []
-  empCheckIns = []
-  empNotCheckIns = []
-  empLateEntry = []
+  empLeaves = {}
+  empCheckIns = {}
+  empNotCheckIns = {}
+  empLateEntry = {}
   notifications = {}
   employee_docs = frappe.db.get_all("Employee", fields=["employee", "employee_name", "user_id"])
   
@@ -411,17 +411,17 @@ def summarize_notification_to_bo_at_eleven_hours():
 
     if not checkin_docs:
       if leaves:
-        empLeaves.append(emp.employee_name)
+        empLeaves[emp.user_id] = emp.employee_name
         continue
-      empNotCheckIns.append(emp.employee_name)
+      empNotCheckIns[emp.user_id] = emp.employee_name
       continue
 
     first_in_log_index = find_index_in_dict(checkin_docs, "log_type", "IN")
     first_in_log = (checkin_docs[first_in_log_index] if first_in_log_index or first_in_log_index == 0 else None)
     if first_in_log:
       if (first_in_log.time > checkin_docs[0].shift_start + timedelta(minutes=15)):
-        empLateEntry.append(emp.employee_name)
-      empCheckIns.append(emp.employee_name)
+        empLateEntry[emp.user_id] = emp.employee_name
+      empCheckIns[emp.user_id] = emp.employee_name
 
   notifications["Leaves"] = empLeaves
   notifications["NotCheckIns"] = empNotCheckIns
@@ -430,7 +430,7 @@ def summarize_notification_to_bo_at_eleven_hours():
 
   print(notifications)
   url = config["msteam_bot"]
-  payload = {"type": "SUMMARIZE_AT_ELEVEN_HOURS", "payloads": [json.dumps(notifications)]}
+  payload = {"type": "SUMMARIZE-ATTENDANCES-LEAVES-TO-BO", "payloads": [json.dumps(notifications)]}
 
   response = requests.post(url=url, json=payload)
   result = response.text
@@ -487,5 +487,5 @@ def process_employee_auto_checkout():
 	employee_auto_checkout()
 
 
-def process_summarize_notification_to_bo_at_eleven_hours():
-	summarize_notification_to_bo_at_eleven_hours()
+def process_notification_to_bo_at_eleven_hours():
+	summarize_attendances_leaves_to_bo()
