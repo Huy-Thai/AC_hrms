@@ -324,9 +324,19 @@ def notification_employee_with_logtype(logType):
 	notifications = {}
 
 	config = config_env_service()
-	employee_doc = frappe.db.get_all("Employee", fields=["employee", "employee_name", "user_id"])
+	employee_docs = frappe.db.get_all(
+    "Employee",
+    filters={
+			"status": ['=', 'Active'],
+		},
+    fields=[
+      "employee",
+      "employee_name",
+      "user_id",
+    ],
+  )
 
-	for emp in employee_doc:
+	for emp in employee_docs:
 		checkin_docs = frappe.db.get_all(
 			"Employee Checkin",
 			filters={
@@ -362,7 +372,7 @@ def notification_employee_with_logtype(logType):
 	# print(employeesPass)
 
 	url = config["msteam_bot"]
-	payload = {"type": "CHECK-IN", "payloads": [json.dumps(notifications)]}
+	payload = {"type": "CHECK_IN", "payloads": [json.dumps(notifications)]}
 	# print(payload)
 
 	response = requests.post(url=url, json=payload)
@@ -380,7 +390,18 @@ def summarize_attendances_leaves_to_bo():
   empNotCheckIns = []
   empLateEntry = []
   notifications = {}
-  employee_docs = frappe.db.get_all("Employee", fields=["employee", "employee_name", "user_id"])
+
+  employee_docs = frappe.db.get_all(
+    "Employee",
+    filters={
+			"status": ['=', 'Active'],
+		},
+    fields=[
+      "employee",
+      "employee_name",
+      "user_id",
+    ],
+  )
   
   for emp in employee_docs:
     checkin_docs = frappe.db.get_all(
@@ -411,29 +432,17 @@ def summarize_attendances_leaves_to_bo():
 
     if not checkin_docs:
       if leaves:
-        empLeaves.append({
-					"email": emp.user_id,
-					"name": emp.employee_name,
-				})
+        empLeaves[emp.user_id] = emp.employee_name
         continue
-      empNotCheckIns.append({
-				"email": emp.user_id,
-				"name": emp.employee_name,
-			})
+      empNotCheckIns[emp.user_id] = emp.employee_name
       continue
 
     first_in_log_index = find_index_in_dict(checkin_docs, "log_type", "IN")
     first_in_log = (checkin_docs[first_in_log_index] if first_in_log_index or first_in_log_index == 0 else None)
     if first_in_log:
       if (first_in_log.time > checkin_docs[0].shift_start + timedelta(minutes=15)):
-        empLateEntry.append({
-					"email": emp.user_id,
-					"name": emp.employee_name,
-				})
-      empCheckIns.append({
-				"email": emp.user_id,
-				"name": emp.employee_name,
-			})
+        empLateEntry[emp.user_id] = emp.employee_name
+      empCheckIns[emp.user_id] = emp.employee_name
 
   notifications["leaves"] = empLeaves
   notifications["notCheckIns"] = empNotCheckIns
@@ -442,7 +451,7 @@ def summarize_attendances_leaves_to_bo():
 
   print(notifications)
   url = config["msteam_bot"]
-  payload = {"type": "SUMMARIZE-ATTENDANCES-LEAVES-TO-BO", "payloads": [json.dumps(notifications)]}
+  payload = {"type": "SUMMARIZE_ATTENDANCES_LEAVES_TODAY", "payloads": [json.dumps(notifications)]}
 
   response = requests.post(url=url, json=payload)
   result = response.text
@@ -455,7 +464,16 @@ def employee_auto_checkout():
 	timestamp = now_datetime().__str__()[:-7]
 	config = config_env_service()
 
-	employee_doc = frappe.db.get_all("Employee", fields=["employee", "employee_name"])
+	employee_doc = frappe.db.get_all(
+   "Employee",
+   filters={
+			"status": ['=', 'Active'],
+		},
+   fields=[
+     "employee",
+     "employee_name",
+    ]
+  )
 
 	for emp in employee_doc:
 		checkin_docs = frappe.db.get_all(
