@@ -385,10 +385,10 @@ def summarize_attendances_leaves_to_bo():
   now = nowdate()
   config = config_env_service()
 
-  empLeaves = []
-  empCheckIns = []
-  empNotCheckIns = []
-  empLateEntry = []
+  empLeaves = {}
+  empCheckIns = {}
+  empNotCheckIns = {}
+  empLateEntry = {}
   notifications = {}
 
   employee_docs = frappe.db.get_all(
