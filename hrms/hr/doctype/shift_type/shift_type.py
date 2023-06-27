@@ -204,7 +204,10 @@ class ShiftType(Document):
 		END_MIDDAY = datetime.time(13, 30, 0)
 		lunch_time = 1.5
 		auto_checkout_time = 6
+		auto_checkout_time_satday = 10
 		late_entry = early_exit = False
+		isSatday = dt.today().weekday() == 5
+
 		total_working_hours, in_time, out_time = calculate_working_hours(
 			logs, self.determine_check_in_and_check_out, self.working_hours_calculation_based_on
 		)
@@ -239,8 +242,11 @@ class ShiftType(Document):
 				total_working_hours -= lunch_time
 
 			if (hasattr(last_out_log, 'auto_check_out')):
-				if cint(last_out_log.auto_check_out):
+				if cint(last_out_log.auto_check_out) and isSatday:
+					total_working_hours -= auto_checkout_time_satday
+				else:
 					total_working_hours -= auto_checkout_time
+					
 
 		if (
 			self.working_hours_threshold_for_absent

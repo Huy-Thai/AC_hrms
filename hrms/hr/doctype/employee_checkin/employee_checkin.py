@@ -368,12 +368,8 @@ def notification_employee_with_logtype(logType):
 			notifications[emp.user_id] = "IN"
 			continue
 
-	# print(logType)
-	# print(employeesPass)
-
 	url = config["msteam_bot"]
 	payload = {"type": "CHECK_IN", "payloads": [json.dumps(notifications)]}
-	# print(payload)
 
 	response = requests.post(url=url, json=payload)
 	result = response.text
@@ -381,7 +377,7 @@ def notification_employee_with_logtype(logType):
 	# Handler push message error here
 
 
-def summarize_attendances_leaves_to_bo():
+def summarize_attendances_leaves_today():
   now = nowdate()
   config = config_env_service()
 
@@ -449,7 +445,6 @@ def summarize_attendances_leaves_to_bo():
   notifications["lateEntries"] = empLateEntry
   notifications["checkIns"] = empCheckIns
 
-  print(notifications)
   url = config["msteam_bot"]
   payload = {"type": "SUMMARIZE_ATTENDANCES_LEAVES_TODAY", "payloads": [json.dumps(notifications)]}
 
@@ -518,4 +513,4 @@ def process_employee_auto_checkout():
 
 
 def process_notification_to_bo_at_eleven_hours():
-	summarize_attendances_leaves_to_bo()
+	summarize_attendances_leaves_today()
