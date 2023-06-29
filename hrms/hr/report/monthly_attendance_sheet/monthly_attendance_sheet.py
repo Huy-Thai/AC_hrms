@@ -286,6 +286,7 @@ def get_employee_related_details(filters: Filters) -> Tuple[Dict, List]:
 			Employee.holiday_list,
 		)
 		.where(Employee.company == filters.company)
+		.where(Employee.status == "Active")
 	)
 
 	if filters.employee:
