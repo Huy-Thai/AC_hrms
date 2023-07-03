@@ -220,7 +220,7 @@ def calculate_working_hours_by_shift_type(logs):
 	END_MIDDAY = datetime.time(13, 30, 0)
 
 	date = getdate()
-	saturday_shift_end = datetime.combine(date, get_time("12:00:00"))
+	saturday_shift_end = dt.combine(date, get_time("12:00:00"))
 	shift_start = logs[0].shift_start
 	shift_end = saturday_shift_end
 	# shift_end = saturday_shift_end if is_saturday else logs[0].shift_end # saturday shift end is specific day
