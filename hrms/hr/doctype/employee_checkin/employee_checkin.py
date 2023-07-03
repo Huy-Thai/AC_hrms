@@ -6,7 +6,7 @@ import frappe
 import datetime
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import cint, get_datetime, get_link_to_form, nowdate, now_datetime
+from frappe.utils import cint, get_datetime, get_link_to_form, nowdate, now_datetime, get_time, getdate
 from datetime import datetime as dt, timedelta
 
 from hrms.hr.doctype.attendance.attendance import (
@@ -212,17 +212,18 @@ def mark_attendance_and_link_log(
 
 
 def calculate_working_hours_by_shift_type(logs):
+	lunch_time = 1.5
 	total_hours = 0
 	in_time = out_time = None
-	shift_start = logs[0].shift_start
-	shift_end = logs[0].shift_end
-
-	lunch_time = 1.5
-	threshold_auto_checkout = 6
-	threshold_auto_checkout_at_saturday = 10
-	is_sat_day = dt.today().weekday() == 5
+	is_saturday = dt.today().weekday() == 5
 	START_MIDDAY = datetime.time(12, 0, 0)
 	END_MIDDAY = datetime.time(13, 30, 0)
+
+	date = getdate()
+	saturday_shift_end = datetime.combine(date, get_time("12:00:00"))
+	shift_start = logs[0].shift_start
+	shift_end = saturday_shift_end
+	# shift_end = saturday_shift_end if is_saturday else logs[0].shift_end # saturday shift end is specific day
 
 	first_in_log_index = find_index_in_dict(logs, "log_type", "IN")
 	first_in_log = (
@@ -243,6 +244,7 @@ def calculate_working_hours_by_shift_type(logs):
 
 		total_hours = time_diff_in_hours(in_time, out_time)
 		print("++++++++")
+		print(shift_end)
 		print(total_hours)
 		if in_time < shift_start:
 			total_hours -= time_diff_in_hours(in_time, shift_start)
@@ -253,7 +255,7 @@ def calculate_working_hours_by_shift_type(logs):
 		is_midday_time_range = time_in_range(START_MIDDAY, END_MIDDAY, last_out_time)
 		is_after_early_afternoon = last_out_time > END_MIDDAY
 
-		if not is_midday_time_range and is_after_early_afternoon:
+		if not is_midday_time_range and is_after_early_afternoon and not is_saturday:
 			total_hours -= lunch_time
 
 		print(in_time)

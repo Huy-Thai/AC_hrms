@@ -200,14 +200,7 @@ class ShiftType(Document):
 		"""Return attendance_status, working_hours, late_entry, early_exit, in_time, out_time
 		for a set of logs belonging to a single shift.
 		"""
-		START_MIDDAY = datetime.time(12, 0, 0)
-		END_MIDDAY = datetime.time(13, 30, 0)
-		lunch_time = 1.5
-		auto_checkout_time = 6
-		auto_checkout_time_satday = 10
 		late_entry = early_exit = False
-		isSatday = dt.today().weekday() == 5
-
 		total_working_hours, in_time, out_time = calculate_working_hours_by_shift_type(logs)
 
 		if (
@@ -223,27 +216,6 @@ class ShiftType(Document):
 			and out_time < logs[0].shift_end - timedelta(minutes=cint(self.early_exit_grace_period))
 		):
 			early_exit = True
-
-		# last_out_log_index = find_index_in_dict(reversed(logs), "log_type", "OUT")
-		# last_out_log = (
-		# 	logs[len(logs) - 1 - last_out_log_index]
-		# 	if last_out_log_index or last_out_log_index == 0
-		# 	else None
-		# )
-
-		# if last_out_log is not None:
-		# 	last_out_time = datetime.time(last_out_log.time.hour, last_out_log.time.minute, 0)
-		# 	isMiddayTimeRange = time_in_range(START_MIDDAY, END_MIDDAY, last_out_time)
-		# 	isAfterEarlyAfternoon = last_out_time > END_MIDDAY
-
-		# 	if not isMiddayTimeRange and isAfterEarlyAfternoon:
-		# 		total_working_hours -= lunch_time
-
-		# 	if (hasattr(last_out_log, 'auto_check_out')):
-		# 		if cint(last_out_log.auto_check_out) and isSatday:
-		# 			total_working_hours -= auto_checkout_time_satday
-		# 		if cint(last_out_log.auto_check_out):
-		# 			total_working_hours -= auto_checkout_time
 
 		if (
 			self.working_hours_threshold_for_absent
