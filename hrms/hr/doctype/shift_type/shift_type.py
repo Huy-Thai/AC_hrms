@@ -18,8 +18,8 @@ from hrms.hr.doctype.attendance.attendance import mark_attendance
 from hrms.hr.doctype.employee_checkin.employee_checkin import (
 	time_in_range,
 	find_index_in_dict,
-	calculate_working_hours,
 	mark_attendance_and_link_log,
+ 	calculate_working_hours_by_shift_type,
 )
 from hrms.hr.doctype.shift_assignment.shift_assignment import get_employee_shift, get_shift_details
 
@@ -208,9 +208,7 @@ class ShiftType(Document):
 		late_entry = early_exit = False
 		isSatday = dt.today().weekday() == 5
 
-		total_working_hours, in_time, out_time = calculate_working_hours(
-			logs, self.determine_check_in_and_check_out, self.working_hours_calculation_based_on
-		)
+		total_working_hours, in_time, out_time = calculate_working_hours_by_shift_type(logs)
 
 		if (
 			cint(self.enable_entry_grace_period)
@@ -226,26 +224,34 @@ class ShiftType(Document):
 		):
 			early_exit = True
 
-		last_out_log_index = find_index_in_dict(reversed(logs), "log_type", "OUT")
-		last_out_log = (
-			logs[len(logs) - 1 - last_out_log_index]
-			if last_out_log_index or last_out_log_index == 0
-			else None
-		)
+		# last_out_log_index = find_index_in_dict(reversed(logs), "log_type", "OUT")
+		# last_out_log = (
+		# 	logs[len(logs) - 1 - last_out_log_index]
+		# 	if last_out_log_index or last_out_log_index == 0
+		# 	else None
+		# )
 
-		if last_out_log is not None:
-			last_out_time = datetime.time(last_out_log.time.hour, last_out_log.time.minute, 0)
-			isMiddayTimeRange = time_in_range(START_MIDDAY, END_MIDDAY, last_out_time)
-			isAfterEarlyAfternoon = last_out_time > END_MIDDAY
+		# if last_out_log is not None:
+		# 	last_out_time = datetime.time(last_out_log.time.hour, last_out_log.time.minute, 0)
+		# 	isMiddayTimeRange = time_in_range(START_MIDDAY, END_MIDDAY, last_out_time)
+		# 	isAfterEarlyAfternoon = last_out_time > END_MIDDAY
 
-			if not isMiddayTimeRange and isAfterEarlyAfternoon:
-				total_working_hours -= lunch_time
+		# 	if not isMiddayTimeRange and isAfterEarlyAfternoon:
+		# 		total_working_hours -= lunch_time
 
-			if (hasattr(last_out_log, 'auto_check_out')):
-				if cint(last_out_log.auto_check_out) and isSatday:
-					total_working_hours -= auto_checkout_time_satday
-				if cint(last_out_log.auto_check_out):
-					total_working_hours -= auto_checkout_time
+		# 	if (hasattr(last_out_log, 'auto_check_out')):
+		# 		if cint(last_out_log.auto_check_out) and isSatday:
+		# 			total_working_hours -= auto_checkout_time_satday
+		# 		if cint(last_out_log.auto_check_out):
+		# 			total_working_hours -= auto_checkout_time
+  
+		print("++++++++")
+		print(logs[0].shift_start)
+		print(logs[0].shift_end)
+		print(in_time)
+		print(out_time)
+		print(total_working_hours)
+		print("++++++++")
 
 		if (
 			self.working_hours_threshold_for_absent

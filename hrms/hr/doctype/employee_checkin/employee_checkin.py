@@ -3,10 +3,11 @@
 import requests
 import json
 import frappe
+import datetime
 from frappe import _
 from frappe.model.document import Document
 from frappe.utils import cint, get_datetime, get_link_to_form, nowdate, now_datetime
-from datetime import timedelta
+from datetime import datetime as dt, timedelta
 
 from hrms.hr.doctype.attendance.attendance import (
 	get_duplicate_attendance_record,
@@ -209,6 +210,51 @@ def mark_attendance_and_link_log(
 	else:
 		frappe.throw(_("{} is an invalid Attendance Status.").format(attendance_status))
 
+
+def calculate_working_hours_by_shift_type(logs):
+	total_hours = 0
+	in_time = out_time = None
+	shift_start = logs[0].shift_start
+	shift_end = logs[0].shift_end
+
+	lunch_time = 1.5
+	threshold_auto_checkout = 6
+	threshold_auto_checkout_at_saturday = 10
+	is_sat_day = dt.today().weekday() == 5
+	START_MIDDAY = datetime.time(12, 0, 0)
+	END_MIDDAY = datetime.time(13, 30, 0)
+
+	first_in_log_index = find_index_in_dict(logs, "log_type", "IN")
+	first_in_log = (
+		logs[first_in_log_index] if first_in_log_index or first_in_log_index == 0 else None
+	)
+
+	last_out_log_index = find_index_in_dict(reversed(logs), "log_type", "OUT")
+	last_out_log = (
+		logs[len(logs) - 1 - last_out_log_index]
+		if last_out_log_index or last_out_log_index == 0
+		else None
+	)
+
+	if first_in_log and last_out_log:
+		in_time, out_time = first_in_log.time, last_out_log.time
+		if in_time >= shift_end:
+			return total_hours, in_time, out_time
+
+		total_hours = time_diff_in_hours(in_time, out_time)
+		if in_time < shift_start:
+			total_hours -= time_diff_in_hours(in_time, shift_start)
+		if out_time > shift_end:
+			total_hours -= time_diff_in_hours(shift_end, out_time)
+
+		last_out_time = datetime.time(out_time.hour, out_time.minute, 0)
+		is_midday_time_range = time_in_range(START_MIDDAY, END_MIDDAY, last_out_time)
+		is_after_early_afternoon = last_out_time > END_MIDDAY
+
+		if not is_midday_time_range and is_after_early_afternoon:
+			total_hours -= lunch_time
+
+	return total_hours, in_time, out_time
 
 def calculate_working_hours(logs, check_in_out_type, working_hours_calc_type):
 	"""Given a set of logs in chronological order calculates the total working hours based on the parameters.
