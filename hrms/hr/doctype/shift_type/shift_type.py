@@ -244,14 +244,6 @@ class ShiftType(Document):
 		# 			total_working_hours -= auto_checkout_time_satday
 		# 		if cint(last_out_log.auto_check_out):
 		# 			total_working_hours -= auto_checkout_time
-  
-		print("++++++++")
-		print(logs[0].shift_start)
-		print(logs[0].shift_end)
-		print(in_time)
-		print(out_time)
-		print(total_working_hours)
-		print("++++++++")
 
 		if (
 			self.working_hours_threshold_for_absent
