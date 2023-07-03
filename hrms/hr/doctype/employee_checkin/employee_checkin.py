@@ -242,6 +242,8 @@ def calculate_working_hours_by_shift_type(logs):
 			return total_hours, in_time, out_time
 
 		total_hours = time_diff_in_hours(in_time, out_time)
+		print("++++++++")
+		print(total_hours)
 		if in_time < shift_start:
 			total_hours -= time_diff_in_hours(in_time, shift_start)
 		if out_time > shift_end:
@@ -254,7 +256,6 @@ def calculate_working_hours_by_shift_type(logs):
 		if not is_midday_time_range and is_after_early_afternoon:
 			total_hours -= lunch_time
 
-		print("++++++++")
 		print(in_time)
 		print(out_time)
 		print(time_diff_in_hours(in_time, shift_start))
