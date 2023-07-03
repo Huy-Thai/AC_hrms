@@ -220,10 +220,9 @@ def calculate_working_hours_by_shift_type(logs):
 	END_MIDDAY = datetime.time(13, 30, 0)
 
 	date = getdate()
-	saturday_shift_end = dt.combine(date, get_time("12:00:00"))
+	saturday_shift_end = dt.combine(date, get_time("12:00:00")) # saturday shift end is specific day so need config manually
 	shift_start = logs[0].shift_start
-	shift_end = saturday_shift_end
-	# shift_end = saturday_shift_end if is_saturday else logs[0].shift_end # saturday shift end is specific day
+	shift_end = logs[0].shift_end if not is_saturday else saturday_shift_end
 
 	first_in_log_index = find_index_in_dict(logs, "log_type", "IN")
 	first_in_log = (
@@ -243,9 +242,6 @@ def calculate_working_hours_by_shift_type(logs):
 			return total_hours, in_time, out_time
 
 		total_hours = time_diff_in_hours(in_time, out_time)
-		print("++++++++")
-		print(shift_end)
-		print(total_hours)
 		if in_time < shift_start:
 			total_hours -= time_diff_in_hours(in_time, shift_start)
 		if out_time > shift_end:
@@ -257,12 +253,6 @@ def calculate_working_hours_by_shift_type(logs):
 
 		if not is_midday_time_range and is_after_early_afternoon and not is_saturday:
 			total_hours -= lunch_time
-
-		print(in_time)
-		print(out_time)
-		print(time_diff_in_hours(in_time, shift_start))
-		print(time_diff_in_hours(shift_end, out_time))
-		print(total_hours)
 
 	return total_hours, in_time, out_time
 
