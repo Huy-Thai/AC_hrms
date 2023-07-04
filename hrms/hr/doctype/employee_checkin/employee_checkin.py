@@ -151,7 +151,7 @@ def mark_attendance_and_link_log(
 			],
 			filters={
 				"employee": employee,
-				"posting_date": ("=", now),
+				"from_date": ("=", now),
 			},
 		)
 
@@ -468,7 +468,7 @@ def summarize_attendances_leaves_today():
 			],
 			filters={
 				"employee": emp.employee,
-				"posting_date": ("=", now),
+				"from_date": ("=", now),
 			},
 		)
 
