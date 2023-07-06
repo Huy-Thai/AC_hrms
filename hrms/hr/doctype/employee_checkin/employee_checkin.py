@@ -143,7 +143,7 @@ def mark_attendance_and_link_log(
 		duplicate = get_duplicate_attendance_record(employee, attendance_date, shift)
 		overlapping = get_overlapping_shift_attendance(employee, attendance_date, shift)
 
-		leave = frappe.get_all(
+		leave = frappe.db.get_all(
 			"Leave Application",
 			fields=[
 				"name",
@@ -446,6 +446,21 @@ def summarize_attendances_leaves_today():
   )
   
   for emp in employee_docs:
+    leaves = frappe.db.get_all(
+			"Leave Application",
+			fields=[
+				"name",
+				"leave_type",
+			],
+			filters={
+				"employee": emp.employee,
+				"from_date": ("=", now),
+			},
+		)
+    if leaves:
+      empLeaves[emp.user_id] = emp.employee_name
+      continue
+
     checkin_docs = frappe.db.get_all(
 			"Employee Checkin",
 			filters={
@@ -459,26 +474,9 @@ def summarize_attendances_leaves_today():
 				"shift_start",
        ]
 		)
-
-    leaves = frappe.get_all(
-			"Leave Application",
-			fields=[
-				"name",
-				"leave_type",
-			],
-			filters={
-				"employee": emp.employee,
-				"from_date": ("=", now),
-			},
-		)
-
     if not checkin_docs:
-      if leaves:
-        empLeaves[emp.user_id] = emp.employee_name
-        continue
       empNotCheckIns[emp.user_id] = emp.employee_name
       continue
-
     first_in_log_index = find_index_in_dict(checkin_docs, "log_type", "IN")
     first_in_log = (checkin_docs[first_in_log_index] if first_in_log_index or first_in_log_index == 0 else None)
     if first_in_log:
