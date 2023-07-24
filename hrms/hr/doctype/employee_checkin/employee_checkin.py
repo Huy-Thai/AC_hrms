@@ -426,10 +426,10 @@ def notification_employee_with_logtype(logType):
 def summarize_attendances_leaves_today():
   now = nowdate()
   config = config_env_service()
-  
+	
+  print(now)
   first_day_in_month = get_all_date_in_month(now.month, now.year)[0]
   last_day_in_month = get_all_date_in_month(now.month, now.year)[-1]
-  print(now)
   print(first_day_in_month)
   print(last_day_in_month)
 
