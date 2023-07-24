@@ -8,6 +8,7 @@ from frappe import _
 from frappe.model.document import Document
 from frappe.utils import cint, get_datetime, get_link_to_form, nowdate, now_datetime, get_time, getdate
 from datetime import datetime as dt, timedelta
+from dateutil.relativedelta import relativedelta
 
 from hrms.hr.doctype.attendance.attendance import (
 	get_duplicate_attendance_record,
@@ -428,7 +429,7 @@ def summarize_attendances_leaves_today():
   config = config_env_service()
 	
   first_day_in_month = get_all_date_in_month(now.month, now.year)[0]
-  last_day_in_month = get_all_date_in_month(now.month, now.year)[-1]
+  last_day_in_next_month = get_all_date_in_month(now.month + relativedelta(months=+1), now.year)[-1]
 
   empLeaves = {}
   empCheckIns = {}
@@ -459,8 +460,8 @@ def summarize_attendances_leaves_today():
 			],
 			filters={
 				"employee": emp.employee,
-				"from_date": ["between", (first_day_in_month, last_day_in_month), "or", ("=", "2023-07-28")],
-				"to_date": ["between", (first_day_in_month, last_day_in_month)],
+				"from_date": (">=", first_day_in_month),
+				"to_date": ("<=", last_day_in_next_month),
 			},
 		)
     
