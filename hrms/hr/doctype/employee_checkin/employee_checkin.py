@@ -17,7 +17,7 @@ from hrms.hr.doctype.shift_assignment.shift_assignment import (
 	get_actual_start_end_datetime_of_shift,
 )
 from hrms.hr.utils import validate_active_employee
-from hrms.utils import config_env_service
+from hrms.utils import config_env_service, get_all_date_in_month, convert_str_to_date
 
 class EmployeeCheckin(Document):
 	def validate(self):
@@ -426,6 +426,12 @@ def notification_employee_with_logtype(logType):
 def summarize_attendances_leaves_today():
   now = nowdate()
   config = config_env_service()
+  
+  first_day_in_month = get_all_date_in_month(now.month, now.year)[0]
+  last_day_in_month = get_all_date_in_month(now.month, now.year)[-1]
+  print(now)
+  print(first_day_in_month)
+  print(last_day_in_month)
 
   empLeaves = {}
   empCheckIns = {}
@@ -446,6 +452,25 @@ def summarize_attendances_leaves_today():
   )
   
   for emp in employee_docs:
+    leaves = frappe.db.get_all(
+			"Leave Application",
+			fields=[
+				"name",
+				"leave_type",
+			],
+			filters={
+				"employee": emp.employee,
+				"from_date": ("=", first_day_in_month),
+				"to_date": ("=", last_day_in_month),
+			},
+		)
+    
+    print(leaves)
+    
+    if leaves:
+      empLeaves[emp.user_id] = emp.employee_name
+      continue
+
     checkin_docs = frappe.db.get_all(
 			"Employee Checkin",
 			filters={
