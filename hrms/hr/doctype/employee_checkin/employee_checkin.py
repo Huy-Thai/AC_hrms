@@ -460,7 +460,7 @@ def summarize_attendances_leaves_today():
 			filters={
 				"employee": emp.employee,
 				"from_date": ["between", (first_day_in_month, last_day_in_month)],
-				"to_date": ["between", (first_day_in_month, last_day_in_month)],
+				"to_date": ["between", (first_day_in_month, last_day_in_month), "or", ("<=", last_day_in_month)],
 			},
 		)
     
