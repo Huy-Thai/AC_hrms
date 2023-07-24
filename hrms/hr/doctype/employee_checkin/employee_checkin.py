@@ -460,8 +460,8 @@ def summarize_attendances_leaves_today():
 			],
 			filters={
 				"employee": emp.employee,
-				"from_date": ("=", first_day_in_month),
-				"to_date": ("=", last_day_in_month),
+				"from_date": (">=", first_day_in_month),
+				"to_date": ("<=", last_day_in_month),
 			},
 		)
     
