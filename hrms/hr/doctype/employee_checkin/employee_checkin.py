@@ -427,9 +427,9 @@ def summarize_attendances_leaves_today():
   now = nowdate()
   config = config_env_service()
 	
-  print(now)
-  first_day_in_month = get_all_date_in_month(now.month, now.year)[0]
-  last_day_in_month = get_all_date_in_month(now.month, now.year)[-1]
+  date_now_obj = convert_str_to_date(now)
+  first_day_in_month = get_all_date_in_month(date_now_obj.month, date_now_obj.year)[0]
+  last_day_in_month = get_all_date_in_month(date_now_obj.month, date_now_obj.year)[-1]
   print(first_day_in_month)
   print(last_day_in_month)
 
@@ -485,22 +485,7 @@ def summarize_attendances_leaves_today():
        ]
 		)
 
-    leaves = frappe.get_all(
-			"Leave Application",
-			fields=[
-				"name",
-				"leave_type",
-			],
-			filters={
-				"employee": emp.employee,
-				"posting_date": ("=", now),
-			},
-		)
-
     if not checkin_docs:
-      if leaves:
-        empLeaves[emp.user_id] = emp.employee_name
-        continue
       empNotCheckIns[emp.user_id] = emp.employee_name
       continue
 
