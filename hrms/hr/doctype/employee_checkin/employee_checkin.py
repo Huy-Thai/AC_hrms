@@ -429,8 +429,6 @@ def summarize_attendances_leaves_today():
 	
   first_day_in_month = get_all_date_in_month(now.month, now.year)[0]
   last_day_in_month = get_all_date_in_month(now.month, now.year)[-1]
-  print(first_day_in_month)
-  print(last_day_in_month)
 
   empLeaves = {}
   empCheckIns = {}
@@ -461,8 +459,8 @@ def summarize_attendances_leaves_today():
 			],
 			filters={
 				"employee": emp.employee,
-				"from_date": (">=", first_day_in_month),
-				"to_date": ("<=", last_day_in_month),
+				"from_date": ["between", (first_day_in_month, last_day_in_month)],
+				"to_date": ["between", (first_day_in_month, last_day_in_month)],
 			},
 		)
     
