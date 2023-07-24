@@ -63,7 +63,7 @@ def before_tests():
  
 def get_all_date_in_month(month, year):
 	num_date = calendar.monthrange(year, month)[1]
-	date = [datetime.date(year, month, day) for day in range(1, num_date + 1)]
+	date = [date(year, month, day) for day in range(1, num_date + 1)]
 	return date
 
 
