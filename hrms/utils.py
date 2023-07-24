@@ -3,7 +3,7 @@ import requests, calendar
 import frappe
 from frappe.utils import now_datetime
 
-from datetime import datetime, date
+from datetime import date
 from erpnext.setup.utils import enable_all_roles_and_domains
 
 country_info = {}
@@ -65,11 +65,6 @@ def get_all_date_in_month(month, year):
 	num_date = calendar.monthrange(year, month)[1]
 	results = [date(year, month, day) for day in range(1, num_date + 1)]
 	return results
-
-
-def convert_str_to_date(date_str):
-  date_object = datetime.strptime(date_str, '%Y-%m-%d').date()
-  return date_object
 
 
 def config_env_service():

@@ -17,7 +17,7 @@ from hrms.hr.doctype.shift_assignment.shift_assignment import (
 	get_actual_start_end_datetime_of_shift,
 )
 from hrms.hr.utils import validate_active_employee
-from hrms.utils import config_env_service, get_all_date_in_month, convert_str_to_date
+from hrms.utils import config_env_service, get_all_date_in_month
 
 class EmployeeCheckin(Document):
 	def validate(self):
@@ -424,12 +424,11 @@ def notification_employee_with_logtype(logType):
 
 
 def summarize_attendances_leaves_today():
-  now = nowdate()
+  now = getdate()
   config = config_env_service()
 	
-  date_now_obj = convert_str_to_date(now)
-  first_day_in_month = get_all_date_in_month(date_now_obj.month, date_now_obj.year)[0]
-  last_day_in_month = get_all_date_in_month(date_now_obj.month, date_now_obj.year)[-1]
+  first_day_in_month = get_all_date_in_month(now.month, now.year)[0]
+  last_day_in_month = get_all_date_in_month(now.month, now.year)[-1]
   print(first_day_in_month)
   print(last_day_in_month)
 
@@ -457,6 +456,8 @@ def summarize_attendances_leaves_today():
 			fields=[
 				"name",
 				"leave_type",
+    		"from_date",
+    		"to_date",
 			],
 			filters={
 				"employee": emp.employee,
