@@ -472,7 +472,6 @@ def summarize_attendances_leaves_today():
         to_date = getdate(dic["to_date"])
         is_leave_today = time_in_range(from_date, to_date, now)
         if is_leave_today:
-          print(emp.employee_name)
           empLeaves[emp.user_id] = emp.employee_name
       continue
 
