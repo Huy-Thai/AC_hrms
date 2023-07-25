@@ -466,10 +466,14 @@ def summarize_attendances_leaves_today():
 			},
 		)
     
-    print(leaves)
-    
     if leaves:
-      empLeaves[emp.user_id] = emp.employee_name
+      for dic in leaves:
+        from_date = getdate(dic["from_date"])
+        to_date = getdate(dic["to_date"])
+        is_leave_today = time_in_range(from_date, to_date, now)
+        if is_leave_today:
+          print(dic["employee_name"])
+          empLeaves[emp.user_id] = emp.employee_name
       continue
 
     checkin_docs = frappe.db.get_all(
