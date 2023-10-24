@@ -1,6 +1,6 @@
 from collections.abc import Generator
-
-import requests
+import requests, calendar
+from datetime import date
 
 import frappe
 from frappe.utils import add_days, date_diff
@@ -62,3 +62,25 @@ def get_employee_email(employee_id: str) -> str | None:
 		or employee_emails.company_email
 		or employee_emails.personal_email
 	)
+
+
+def get_all_date_in_month(month, year):
+	num_date = calendar.monthrange(year, month)[1]
+	results = [date(year, month, day) for day in range(1, num_date + 1)]
+	return results
+
+
+def config_env_service():
+  isProduction = True # Change False if run on env development
+  services = {
+		"msteam_bot": "https://acerp-bot-team-dev.pandion.vn/api/notification",
+		"server_ip": "192.168.11.22"
+	}
+
+  if isProduction:
+    services = {
+		"msteam_bot": "https://acerp-bot-team.pandion.vn/api/notification",
+		"server_ip": "192.168.11.23"
+	}
+  
+  return services

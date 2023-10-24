@@ -9,3 +9,5 @@ hrms/docs/current
 node_modules/
 dist/
 __pycache__/
+.vscode
+.history
