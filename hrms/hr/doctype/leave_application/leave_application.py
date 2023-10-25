@@ -70,7 +70,7 @@ class LeaveApplication(Document):
 		validate_active_employee(self.employee)
 		set_employee_name(self)
 		self.validate_dates()
-		self.validate_balance_leaves()
+		# self.validate_balance_leaves()
 		self.validate_leave_overlap()
 		self.validate_max_days()
 		self.show_block_day_warning()
@@ -274,10 +274,10 @@ class LeaveApplication(Document):
 			if doc.status == "Absent":
 				doc.db_set({"status": status, "leave_type": self.leave_type, "leave_application": self.name})
 
-			if doc.status == "Half Day" and cint(self.half_day):
-				doc.db_set({"leave_type": self.leave_type, "leave_application": self.name})
-			else:
+			if doc.status == "Half Day" and cint(self.half_day) == 0:
 				frappe.throw(_("Cảnh báo: Thời gian nghỉ hợp lệ vào ngày này phải là nửa ngày (Half Day)"))
+			else:
+				doc.db_set({"leave_type": self.leave_type, "leave_application": self.name})
 
 			# TODO: handle with status work from home
 
