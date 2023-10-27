@@ -127,7 +127,7 @@ class ShiftType(Document):
 				self.name,
 			)
 
-		for employee in self.get_assigned_employee(now, True):
+		for employee in self.get_assigned_employees(now, True):
 			self.mark_absent_for_dates_with_no_attendance(employee)
 
 
