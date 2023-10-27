@@ -3,8 +3,7 @@
 
 
 import itertools
-import datetime
-from datetime import datetime as dt, timedelta
+from datetime import datetime, timedelta
 
 import frappe
 from frappe.model.document import Document
