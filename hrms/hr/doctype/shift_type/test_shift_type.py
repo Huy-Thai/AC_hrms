@@ -494,12 +494,12 @@ class TestShiftType(FrappeTestCase):
 		"""
 		from hrms.hr.doctype.employee_checkin.test_employee_checkin import make_checkin
 
-	# @set_holiday_list("Salary Slip Test Holiday List", "_Test Company")
-	# def test_skip_marking_absent_on_a_holiday(self):
-	# 	employee = make_employee("test_employee_checkin@example.com", company="_Test Company")
-	# 	shift_type = setup_shift_type(shift_type="Test Absent with no Attendance")
-	# 	shift_type.holiday_list = None
-	# 	shift_type.save()
+		default_shift = setup_shift_type()
+		employee = make_employee(
+			"test_employee_checkin_default@example.com",
+			company="_Test Company",
+			default_shift=default_shift.name,
+		)
 
 	# 	# should not mark any attendance if no shift assignment is created
 	# 	shift_type.process_auto_attendance()

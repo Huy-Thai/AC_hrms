@@ -8,7 +8,7 @@ from datetime import datetime as dt, timedelta
 
 import frappe
 from frappe.model.document import Document
-from frappe.utils import cint, get_datetime, get_time, getdate, nowdate
+from frappe.utils import cint, create_batch, get_datetime, get_time, getdate, nowdate
 
 from erpnext.setup.doctype.employee.employee import get_holiday_list_for_employee
 from erpnext.setup.doctype.holiday_list.holiday_list import is_holiday
@@ -23,6 +23,8 @@ from hrms.hr.doctype.employee_checkin.employee_checkin import (
 from hrms.hr.doctype.shift_assignment.shift_assignment import get_employee_shift, get_shift_details
 from hrms.utils import get_date_range
 from hrms.utils.holiday_list import get_holiday_dates_between
+
+EMPLOYEE_CHUNK_SIZE = 50
 
 
 class ShiftType(Document):
@@ -66,8 +68,18 @@ class ShiftType(Document):
 				self.name,
 			)
 
-		for employee in self.get_assigned_employees(self.process_attendance_after, True):
-			self.mark_absent_for_dates_with_no_attendance(employee)
+		# commit after processing checkin logs to avoid losing progress
+		frappe.db.commit()  # nosemgrep
+
+		assigned_employees = self.get_assigned_employees(self.process_attendance_after, True)
+
+		# mark absent in batches & commit to avoid losing progress since this tries to process remaining attendance
+		# right from "Process Attendance After" to "Last Sync of Checkin"
+		for batch in create_batch(assigned_employees, EMPLOYEE_CHUNK_SIZE):
+			for employee in batch:
+				self.mark_absent_for_dates_with_no_attendance(employee)
+
+			frappe.db.commit()  # nosemgrep
 
 	@frappe.whitelist()
 	def process_auto_attendance_daily(self):
@@ -329,7 +341,7 @@ class ShiftType(Document):
 			)
 		).run(pluck=True)
 
-	def get_assigned_employees(self, from_date=None, consider_default_shift=False):
+	def get_assigned_employees(self, from_date=None, consider_default_shift=False) -> list[str]:
 		filters = {"shift_type": self.name, "docstatus": "1", "status": "Active"}
 		if from_date:
 			filters["start_date"] = (">=", from_date)
@@ -343,7 +355,7 @@ class ShiftType(Document):
 		# exclude inactive employees
 		inactive_employees = frappe.db.get_all("Employee", {"status": "Inactive"}, pluck="name")
 
-		return set(assigned_employees) - set(inactive_employees)
+		return list(set(assigned_employees) - set(inactive_employees))
 
 	def get_employees_with_default_shift(self, filters: dict) -> list:
 		default_shift_employees = frappe.get_all(
