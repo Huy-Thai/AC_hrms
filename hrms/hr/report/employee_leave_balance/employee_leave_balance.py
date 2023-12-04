@@ -302,7 +302,7 @@ def get_opening_balance(
 	return opening_balance
 
 
-def get_conditions(filters: Filters) -> Dict:
+def get_conditions(filters: Filters) -> dict:
 	conditions = {"status": "Active"}
 
 	if filters.employee:
@@ -320,7 +320,7 @@ def get_conditions(filters: Filters) -> Dict:
 	return conditions
 
 
-def get_department_leave_approver_map(department: Optional[str] = None):
+def get_department_leave_approver_map(department = None):
 	# get current department and all its child
 	department_list = frappe.get_list(
 		"Department",
