@@ -143,7 +143,7 @@ def get_columns() -> list[dict]:
 # 	]
 
 
-def get_data(filters: Filters) -> List:
+def get_data(filters: Filters) -> list:
 	conditions = get_conditions(filters)
 	employees = frappe.get_list(
 		"Employee",
