@@ -18,7 +18,9 @@
   "shift_start",
   "shift_end",
   "shift_actual_start",
-  "shift_actual_end"
+  "shift_actual_end",
+  "auto_check_out",
+  "created_at"
  ],
  "fields": [
   {
@@ -77,6 +79,13 @@
    "label": "Skip Auto Attendance"
   },
   {
+    "default": "0",
+    "fieldname": "auto_check_out",
+    "fieldtype": "Check",
+    "label": "Auto Check Out",
+    "read_only": 1
+   },
+  {
    "fieldname": "attendance",
    "fieldtype": "Link",
    "label": "Attendance Marked",
@@ -106,7 +115,13 @@
    "fieldtype": "Datetime",
    "hidden": 1,
    "label": "Shift Actual End"
-  }
+  },
+  {
+    "fieldname": "created_at",
+    "fieldtype": "Datetime",
+    "hidden": 1,
+    "label": "Created At"
+   }
  ],
  "links": [],
  "modified": "2023-05-12 14:52:22.660264",

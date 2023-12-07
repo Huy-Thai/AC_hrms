@@ -71,7 +71,7 @@ def get_all_date_in_month(month, year):
 
 
 def config_env_service():
-  isProduction = False # Change False if run on env development
+  isProduction = True # Change False if run on env development
   services = {
 		"msteam_bot": "https://acerp-bot-team-dev.pandion.vn/api/notification",
 		"server_ip": "192.168.11.22"
@@ -80,7 +80,7 @@ def config_env_service():
   if isProduction:
     services = {
 		"msteam_bot": "https://acerp-bot-team.pandion.vn/api/notification",
-		"server_ip": "192.168.11.23"
+		"server_ip": "192.168.11.24"
 	}
   
   return services
