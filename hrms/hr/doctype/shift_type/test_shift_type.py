@@ -674,8 +674,8 @@ def setup_shift_type(**args):
 		{
 			"doctype": "Shift Type",
 			"__newname": args.shift_type or "_Test Shift",
-			"start_time": "08:00:00",
-			"end_time": "17:30:00",
+			"start_time": args.start_time or "08:00:00",
+			"end_time": args.end_time or "12:00:00",
 			"enable_auto_attendance": 1,
 			"determine_check_in_and_check_out": "Strictly based on Log Type in Employee Checkin",
 			"working_hours_calculation_based_on": "First Check-in and Last Check-out",
