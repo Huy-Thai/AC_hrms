@@ -119,14 +119,6 @@ def get_custom_fields():
 				"insert_after": "column_break_45",
 			},
 			{
-				"fetch_from": "user.full_name",
-				"fieldname": "leave_approver_name",
-				"fieldtype": "Link",
-				"label": "Leave Approver Name",
-				"read_only": 1,
-				"insert_after": "shift_request_approver",
-			},
-			{
 				"fieldname": "salary_cb",
 				"fieldtype": "Column Break",
 				"insert_after": "salary_mode",
