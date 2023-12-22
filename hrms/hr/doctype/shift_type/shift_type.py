@@ -81,6 +81,7 @@ class ShiftType(Document):
 
 			frappe.db.commit()  # nosemgrep
 
+
 	@frappe.whitelist()
 	def process_auto_attendance_daily(self):
 		if (not cint(self.enable_auto_attendance)):
@@ -113,7 +114,7 @@ class ShiftType(Document):
 
 		for key, group in itertools.groupby(logs, key=lambda x: (x["employee"], x["shift_start"])):
 			single_shift_logs = list(group)
-			attendance_date = single_shift_logs[0].shift_actual_start.date()
+			attendance_date = key[1].date()
 
 			if not self.should_mark_attendance(key[0], attendance_date):
 				continue
@@ -138,9 +139,19 @@ class ShiftType(Document):
 				out_time,
 				self.name,
 			)
+		
+		# commit after processing checkin logs to avoid losing progress
+		frappe.db.commit()  # nosemgrep
 
-		for employee in self.get_assigned_employee(now, True):
-			self.mark_absent_for_dates_with_no_attendance(employee)
+		assigned_employees = self.get_assigned_employees(now, True)
+
+		# mark absent in batches & commit to avoid losing progress since this tries to process remaining attendance
+		# right from "Process Attendance After" to "Last Sync of Checkin"
+		for batch in create_batch(assigned_employees, EMPLOYEE_CHUNK_SIZE):
+			for employee in batch:
+				self.mark_absent_for_dates_with_no_attendance(employee)
+
+			frappe.db.commit()  # nosemgrep
 
 
 	# def get_attendance(self, logs):
