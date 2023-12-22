@@ -539,6 +539,7 @@ def employee_auto_checkout():
 		doc.log_type = "OUT"
 		doc.auto_check_out = "1"
 		doc.insert()
+	frappe.db.commit()
 	return True
 
 

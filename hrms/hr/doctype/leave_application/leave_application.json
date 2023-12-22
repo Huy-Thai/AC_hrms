@@ -27,6 +27,7 @@
   "section_break_7",
   "leave_approver",
   "leave_approver_name",
+  "approver_message",
   "follow_via_email",
   "column_break_18",
   "posting_date",
@@ -65,6 +66,14 @@
    "fieldtype": "Data",
    "in_global_search": 1,
    "label": "Employee Name",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "employee.user_id",
+   "fieldname": "employee_email",
+   "fieldtype": "Data",
+   "in_global_search": 1,
+   "label": "Employee Email",
    "read_only": 1
   },
   {
@@ -164,6 +173,11 @@
    "fieldtype": "Data",
    "label": "Leave Approver Name",
    "read_only": 1
+  },
+  {
+   "fieldname": "approver_message",
+   "fieldtype": "Small Text",
+   "label": "Approver Message"
   },
   {
    "fieldname": "column_break_18",
