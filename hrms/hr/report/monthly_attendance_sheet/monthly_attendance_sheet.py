@@ -19,8 +19,8 @@ status_map = {
 	"Half Day": "HD",
 	"Work From Home": "WFH",
 	"On Leave": "L",
-	"Holiday": "H",
-	"Weekly Off": "WO",
+	# "Holiday": "H",
+	# "Weekly Off": "WO",
 }
 
 day_abbr = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
@@ -46,21 +46,23 @@ def execute(filters: Optional[Filters] = None) -> Tuple:
 		)
 		return columns, [], None, None
 
-	message = get_message() if not filters.summarized_view else ""
-	chart = get_chart_data(attendance_map, filters)
+	# message = get_message() if not filters.summarized_view else ""	
+	message = ""
+	# chart = get_chart_data(attendance_map, filters)
 
-	return columns, data, message, chart
+	return columns, data, message, None
 
 
 def get_message() -> str:
 	message = ""
-	colors = ["green", "red", "orange", "green", "#318AD8", "", ""]
+	# colors = ["#32a842", "red", "orange", "#32a842", "#318AD8", "", ""]
+	colors = ["#32a842", "red", "orange", "#32a842", "#318AD8"]
 
 	count = 0
 	for status, abbr in status_map.items():
 		message += f"""
 			<span style='border-left: 2px solid {colors[count]}; padding-right: 12px; padding-left: 5px; margin-right: 3px;'>
-				{status} - {abbr}
+				{status}
 			</span>
 		"""
 		count += 1
@@ -227,7 +229,7 @@ def get_attendance_map(filters: Filters) -> Dict:
 			d.shift = ""
 
 		attendance_map.setdefault(d.employee, {}).setdefault(d.shift, {})
-		attendance_map[d.employee][d.shift][d.day_of_month] = d.status
+		attendance_map[d.employee][d.shift][d.day_of_month] = d.status + " - " + str(round(d.working_hours, 1))
 
 	# leave is applicable for the entire day so all shifts should show the leave entry
 	for employee, leave_days in leave_map.items():
@@ -237,7 +239,7 @@ def get_attendance_map(filters: Filters) -> Dict:
 
 		for day in leave_days:
 			for shift in attendance_map[employee].keys():
-				attendance_map[employee][shift][day] = "On Leave"
+				attendance_map[employee][shift][day] = "On Leave" + " - 0"
 
 	return attendance_map
 
@@ -251,6 +253,7 @@ def get_attendance_records(filters: Filters) -> List[Dict]:
 			Extract("day", Attendance.attendance_date).as_("day_of_month"),
 			Attendance.status,
 			Attendance.shift,
+			Attendance.working_hours
 		)
 		.where(
 			(Attendance.docstatus == 1)
@@ -286,6 +289,7 @@ def get_employee_related_details(filters: Filters) -> Tuple[Dict, List]:
 			Employee.holiday_list,
 		)
 		.where(Employee.company == filters.company)
+		.where(Employee.status == "Active")
 	)
 
 	if filters.employee:
@@ -489,14 +493,40 @@ def get_attendance_summary_and_days(employee: str, filters: Filters) -> Tuple[Di
 
 	return summary[0], days
 
+# def get_attendance_status_for_detailed_view(
+# 	employee: str, filters: Filters, employee_attendance: Dict, holidays: List
+# ) -> List[Dict]:
+# 	"""Returns list of shift-wise attendance status for employee
+# 	[
+# 	        {'shift': 'Morning Shift', 1: 'A', 2: 'P', 3: 'A'....},
+# 	        {'shift': 'Evening Shift', 1: 'P', 2: 'A', 3: 'P'....}
+# 	]
+# 	"""
+# 	total_days = get_total_days_in_month(filters)
+# 	attendance_values = []
+
+# 	for shift, status_dict in employee_attendance.items():
+# 		row = {"shift": shift}
+
+# 		for day in range(1, total_days + 1):
+# 			status = status_dict.get(day)
+# 			if status is None and holidays:
+# 				status = get_holiday_status(day, holidays)
+
+# 			abbr = status_map.get(status, "")
+# 			row[day] = abbr
+
+# 		attendance_values.append(row)
+
+# 	return attendance_values
 
 def get_attendance_status_for_detailed_view(
 	employee: str, filters: Filters, employee_attendance: Dict, holidays: List
 ) -> List[Dict]:
 	"""Returns list of shift-wise attendance status for employee
 	[
-	        {'shift': 'Morning Shift', 1: 'A', 2: 'P', 3: 'A'....},
-	        {'shift': 'Evening Shift', 1: 'P', 2: 'A', 3: 'P'....}
+	        {'shift': 'Morning Shift', 1: '1,0', 2: '8,9', 3: '1,5'....},
+	        {'shift': 'Evening Shift', 1: '8,0', 2: '0,0', 3: '8,6'....}
 	]
 	"""
 	total_days = get_total_days_in_month(filters)
@@ -504,17 +534,32 @@ def get_attendance_status_for_detailed_view(
 
 	for shift, status_dict in employee_attendance.items():
 		row = {"shift": shift}
-
 		for day in range(1, total_days + 1):
-			status = status_dict.get(day)
+			status = status_dict.get(day)	
+
 			if status is None and holidays:
 				status = get_holiday_status(day, holidays)
+				continue
 
-			abbr = status_map.get(status, "")
-			row[day] = abbr
+			data_map = status.split(" - ")
+			status_map_value = None
+			working_hours_map_value = None
+
+			if data_map:
+				status_map_value = data_map[0]
+				working_hours_map_value = data_map[1].replace(".0", "")	
+			
+			if status_map_value == "Absent":
+				row[day] = "Off"
+				continue
+			
+			if status_map_value == "On Leave":
+				row[day] = "Phép"
+				continue
+
+			row[day] = working_hours_map_value
 
 		attendance_values.append(row)
-
 	return attendance_values
 
 

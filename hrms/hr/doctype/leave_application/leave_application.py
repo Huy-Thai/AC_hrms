@@ -75,7 +75,7 @@ class LeaveApplication(Document, PWANotificationsMixin):
 		validate_active_employee(self.employee)
 		set_employee_name(self)
 		self.validate_dates()
-		self.validate_balance_leaves()
+		# self.validate_balance_leaves()
 		self.validate_leave_overlap()
 		self.validate_max_days()
 		self.show_block_day_warning()
@@ -276,16 +276,24 @@ class LeaveApplication(Document, PWANotificationsMixin):
 			self.create_or_update_attendance(attendance_name, date)
 
 	def create_or_update_attendance(self, attendance_name, date):
-		status = (
-			"Half Day"
-			if self.half_day_date and getdate(date) == getdate(self.half_day_date)
-			else "On Leave"
-		)
-
+		# status = (
+		# 	"Half Day"
+		# 	if self.half_day_date and getdate(date) == getdate(self.half_day_date)
+		# 	else "On Leave"
+		# )
+		status = "On Leave"
 		if attendance_name:
 			# update existing attendance, change absent to on leave
 			doc = frappe.get_doc("Attendance", attendance_name)
-			doc.db_set({"status": status, "leave_type": self.leave_type, "leave_application": self.name})
+			if doc.status == "Absent":
+				doc.db_set({"status": status, "leave_type": self.leave_type, "leave_application": self.name})
+
+			if doc.status == "Half Day":
+				if cint(self.half_day) == 1:
+					doc.db_set({"leave_type": self.leave_type, "leave_application": self.name})
+				else:
+					frappe.throw(_("Thời gian nghỉ hợp lệ vào ngày này phải là nửa ngày (Half Day)"))
+			# TODO: handle with status work from home
 		else:
 			# make new attendance and submit it
 			doc = frappe.new_doc("Attendance")

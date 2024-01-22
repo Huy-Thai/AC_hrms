@@ -5,20 +5,20 @@ frappe.query_reports["Employee Leave Balance"] = {
 	filters: [
 		{
 			fieldname: "from_date",
-			label: __("From Date"),
+			label: __("Bắt đầu"),
 			fieldtype: "Date",
 			reqd: 1,
 			default: frappe.defaults.get_default("year_start_date")
 		},
 		{
 			fieldname: "to_date",
-			label: __("To Date"),
+			label: __("Kết thúc"),
 			fieldtype: "Date",
 			reqd: 1,
 			default: frappe.defaults.get_default("year_end_date")
 		},
 		{
-			label: __("Company"),
+			label: __("Công ty"),
 			fieldname: "company",
 			fieldtype: "Link",
 			options: "Company",
@@ -27,36 +27,44 @@ frappe.query_reports["Employee Leave Balance"] = {
 		},
 		{
 			fieldname: "department",
-			label: __("Department"),
+			label: __("Phòng ban"),
 			fieldtype: "Link",
 			options: "Department",
 		},
 		{
 			fieldname: "employee",
-			label: __("Employee"),
+			label: __("Nhân viên"),
 			fieldtype: "Link",
 			options: "Employee",
 		},
 		{
-			fieldname: "employee_status",
-			label: __("Employee Status"),
-			fieldtype: "Select",
-			options: [
-				"",
-				{ "value": "Active", "label": __("Active") },
-				{ "value": "Inactive", "label": __("Inactive") },
-				{ "value": "Suspended", "label": __("Suspended") },
-				{ "value": "Left", "label": __("Left") },
-			],
-			default: "Active",
-		},
-		{
-			fieldname: "consolidate_leave_types",
-			label: __("Consolidate Leave Types"),
+			fieldname: "consolidate_employee_name",
+			label: __("Tổng hợp theo tên"),
 			fieldtype: "Check",
 			default: 1,
 			depends_on: "eval: !doc.employee",
 		}
+
+		// {
+		// 	fieldname: "employee_status",
+		// 	label: __("Employee Status"),
+		// 	fieldtype: "Select",
+		// 	options: [
+		// 		"",
+		// 		{ "value": "Active", "label": __("Active") },
+		// 		{ "value": "Inactive", "label": __("Inactive") },
+		// 		{ "value": "Suspended", "label": __("Suspended") },
+		// 		{ "value": "Left", "label": __("Left") },
+		// 	],
+		// 	default: "Active",
+		// },
+		// {
+		// 	fieldname: "consolidate_leave_types",
+		// 	label: __("Consolidate Leave Types"),
+		// 	fieldtype: "Check",
+		// 	default: 1,
+		// 	depends_on: "eval: !doc.employee",
+		// }
 	],
 	onload: () => {
 		const today = frappe.datetime.now_date();
