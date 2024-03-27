@@ -96,16 +96,28 @@ frappe.ui.form.on("Salary Structure", {
 		frm.fields_dict['deductions'].grid.set_column_disp("default_amount", false);
 
 		if (frm.doc.docstatus === 1) {
-			frm.add_custom_button(__("Bulk Assign Structure"), () => {
-				frm.trigger("assign_to_employees")
-			}).addClass("btn-primary");
-
-			frm.add_custom_button(__("Assign to Employee"), function() {
-				let doc = frappe.model.get_new_doc("Salary Structure Assignment");
+			frm.add_custom_button(__("Single Assignment"), function() {
+				const doc = frappe.model.get_new_doc("Salary Structure Assignment");
 				doc.salary_structure = frm.doc.name;
 				doc.company = frm.doc.company;
 				frappe.set_route("Form", "Salary Structure Assignment", doc.name);
-			}, __("Actions"));
+			}, __("Create"));
+
+			frm.add_custom_button(__("Bulk Assignments"), () => {
+				const doc = frappe.model.get_new_doc("Bulk Salary Structure Assignment");
+				doc.salary_structure = frm.doc.name;
+				doc.company = frm.doc.company;
+				frappe.set_route("Form", "Bulk Salary Structure Assignment", doc.name);
+			}, __("Create"))
+
+			frm.add_custom_button(__("Income Tax Slab"), () => {
+				frappe.model.with_doctype("Income Tax Slab", () => {
+					const doc = frappe.model.get_new_doc("Income Tax Slab");
+					frappe.set_route("Form", "Income Tax Slab", doc.name);
+				});
+			}, __("Create"));
+
+			frm.page.set_inner_btn_group_as_primary(__('Create'));
 
 			frm.add_custom_button(__("Preview Salary Slip"), function() {
 				frm.trigger("preview_salary_slip");
@@ -123,56 +135,6 @@ frappe.ui.form.on("Salary Structure", {
 			);
 		});
 		frm.trigger('set_earning_deduction_component');
-	},
-
-	assign_to_employees:function (frm) {
-		var d = new frappe.ui.Dialog({
-			title: __("Bulk Salary Structure Assignment"),
-			fields: [
-				{fieldname: "sec_break", fieldtype: "Section Break", label: __("Employee Filters")},
-				{fieldname: "branch", fieldtype: "Link", options: "Branch", label: __("Branch")},
-				{fieldname:'designation', fieldtype:'Link', options: 'Designation', label: __('Designation')},
-				{fieldname:'department', fieldtype:'Link', options: 'Department', label: __('Department')},
-				{fieldname: "grade", fieldtype: "Link", options: "Employee Grade", label: __("Employee Grade")},
-				{fieldname:"employee", fieldtype: "Link", options: "Employee", label: __("Employee")},
-				{fieldname:"payroll_payable_account", fieldtype: "Link", options: "Account", filters: {"company": frm.doc.company, "root_type": "Liability", "is_group": 0, "account_currency": frm.doc.currency}, label: __("Payroll Payable Account")},
-				{fieldname:'base_variable', fieldtype:'Section Break'},
-				{fieldname:'from_date', fieldtype:'Date', label: __('From Date'), "reqd": 1},
-				{fieldname:'income_tax_slab', fieldtype:'Link', label: __('Income Tax Slab'), options: 'Income Tax Slab'},
-				{fieldname:'base_col_br', fieldtype:'Column Break'},
-				{fieldname:'base', fieldtype:'Currency', label: __('Base')},
-				{fieldname:'variable', fieldtype:'Currency', label: __('Variable')}
-			],
-			primary_action: function() {
-				var data = d.get_values();
-				delete data.company
-				delete data.currency
-				frappe.call({
-					doc: frm.doc,
-					method: "assign_salary_structure",
-					args: data,
-					callback: function(r) {
-						if(!r.exc) {
-							d.hide();
-							frm.reload_doc();
-						}
-					}
-				});
-			},
-			primary_action_label: __('Assign')
-		});
-
-		d.fields_dict.grade.df.onchange = function() {
-			const grade = d.fields_dict.grade.value;
-			if (grade) {
-				frappe.db.get_value('Employee Grade', grade, 'default_base_pay')
-					.then(({ message }) => {
-						d.set_value('base', message.default_base_pay);
-					});
-			}
-		};
-
-		d.show();
 	},
 
 	salary_slip_based_on_timesheet: function(frm) {
@@ -291,6 +253,11 @@ cur_frm.cscript.validate = function(doc, cdt, cdn) {
 
 
 frappe.ui.form.on('Salary Detail', {
+	form_render: function(frm, cdt, cdn) {
+		const row = locals[cdt][cdn];
+		hrms.payroll_common.set_autocompletions_for_condition_and_formula(frm, row);
+	},
+
 	amount: function(frm) {
 		calculate_totals(frm.doc);
 	},

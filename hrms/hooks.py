@@ -245,7 +245,7 @@ scheduler_events = {
 	}
 }
 
-advance_payment_doctypes = ["Gratuity", "Employee Advance"]
+advance_payment_payable_doctypes = ["Gratuity", "Employee Advance"]
 
 invoice_doctypes = ["Expense Claim"]
 

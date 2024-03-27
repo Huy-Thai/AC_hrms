@@ -74,12 +74,19 @@ def get_columns(filters: Filters) -> List[Dict]:
 	columns = []
 
 	if filters.group_by:
+		options_mapping = {
+			"Branch": "Branch",
+			"Grade": "Employee Grade",
+			"Department": "Department",
+			"Designation": "Designation",
+		}
+		options = options_mapping.get(filters.group_by)
 		columns.append(
 			{
 				"label": _(filters.group_by),
 				"fieldname": frappe.scrub(filters.group_by),
 				"fieldtype": "Link",
-				"options": "Branch",
+				"options": options,
 				"width": 120,
 			}
 		)
@@ -162,12 +169,13 @@ def get_columns_for_days(filters: Filters) -> List[Dict]:
 	days = []
 
 	for day in range(1, total_days + 1):
+		day = cstr(day)
 		# forms the dates from selected year and month from filters
-		date = "{}-{}-{}".format(cstr(filters.year), cstr(filters.month), cstr(day))
+		date = "{}-{}-{}".format(cstr(filters.year), cstr(filters.month), day)
 		# gets abbr from weekday number
 		weekday = day_abbr[getdate(date).weekday()]
 		# sets days as 1 Mon, 2 Tue, 3 Wed
-		label = "{} {}".format(cstr(day), weekday)
+		label = "{} {}".format(day, weekday)
 		days.append({"label": label, "fieldtype": "Data", "fieldname": day, "width": 65})
 
 	return days
@@ -192,7 +200,7 @@ def get_data(filters: Filters, attendance_map: Dict) -> List[Dict]:
 			records = get_rows(employee_details[value], filters, holiday_map, attendance_map)
 
 			if records:
-				data.append({group_by_column: frappe.bold(value)})
+				data.append({group_by_column: value})
 				data.extend(records)
 	else:
 		data = get_rows(employee_details, filters, holiday_map, attendance_map)
@@ -664,7 +672,7 @@ def get_chart_data(attendance_map: Dict, filters: Filters) -> Dict:
 
 		for employee, attendance_dict in attendance_map.items():
 			for shift, attendance in attendance_dict.items():
-				attendance_on_day = attendance.get(day["fieldname"])
+				attendance_on_day = attendance.get(cint(day["fieldname"]))
 
 				if attendance_on_day == "On Leave":
 					# leave should be counted only once for the entire day

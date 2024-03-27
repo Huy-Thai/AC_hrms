@@ -46,9 +46,17 @@ def set_defaults():
 	)
 
 
-def get_first_sunday(holiday_list="Salary Slip Test Holiday List", for_date=None):
+def get_first_sunday(
+	holiday_list="Salary Slip Test Holiday List", for_date=None, find_after_for_date=False
+):
 	date = for_date or getdate()
 	month_start_date = get_first_day(date)
+
+	if find_after_for_date:
+		# explictly find first sunday after for_date
+		# useful when DOJ is after the month start
+		month_start_date = date
+
 	month_end_date = get_last_day(date)
 	first_sunday = frappe.db.sql(
 		"""
@@ -110,6 +118,19 @@ def create_department(name: str, company: str = "_Test Company") -> str:
 	return department.name
 
 
+def create_employee_grade(grade: str, default_structure: str = None, default_base: float = 50000):
+	if frappe.db.exists("Employee Grade", grade):
+		return frappe.get_doc("Employee Grade", grade)
+	return frappe.get_doc(
+		{
+			"doctype": "Employee Grade",
+			"__newname": grade,
+			"default_salary_structure": default_structure,
+			"default_base_pay": default_base,
+		}
+	).insert()
+
+
 def create_job_applicant(**args):
 	args = frappe._dict(args)
 	filters = {
@@ -130,3 +151,7 @@ def create_job_applicant(**args):
 	job_applicant.update(filters)
 	job_applicant.save()
 	return job_applicant
+
+
+def get_email_by_subject(subject: str) -> str | None:
+	return frappe.db.exists("Email Queue", {"message": ("like", f"%{subject}%")})
